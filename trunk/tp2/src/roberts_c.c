@@ -10,8 +10,8 @@
 void roberts_c (unsigned char *src, unsigned char *dst, int h, int w, int row_size) {
 	
 	int y, x;
-	for (y = 1; y < h-1; y++) {		  
-		for (x = 1; x < w-1; x++) {		
+	for (y = 0; y < h-1; y++) {		  
+		for (x = 0; x < w-1; x++) {		
 			int curpixel = (row_size*y) + x;
 			
 			int filtro_x = src[curpixel] - src[curpixel + row_size + 1];
