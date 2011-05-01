@@ -2,6 +2,10 @@
 
 global roberts_asm
 
+section .rodata
+unos16b: dq 0x0001000100010001
+		dq 0x0001000100010001
+
 section .text
 
 roberts_asm:
@@ -48,36 +52,60 @@ roberts_asm:
 				; Cargo la fila actual y la siguiente fila
 				movq xmm6, [edi]
 				movq xmm7, [edi + edx]
-				; los pongo como numero de 16 bits
-				; XXX: es little endian, de que "lado" van los 0s ?
-				; segun el manual (pag 248) asi creo que esta bien. Revisar
+				; los pongo como entero de 16 bits
 				pxor xmm2, xmm2
-				punpcklbw xmm6, xmm2
+				punpcklbw xmm6, xmm2 
 				punpcklbw xmm7, xmm2
+				
+				; xmm6 <- fila actual
+				; xmm7 <- fila siguiente
 
 				;Filtro en x
+					
+					; copio ambas filas en registros 0 y 1
+					movdqa xmm0, xmm6
+					movdqa xmm1, xmm7
 
-				movdqu xmm0, xmm6
-				movdqu xmm1, xmm7
+					; alineamos para operar en paralelo las diagonales
+					psrldq xmm1, 2	;shift a la izquierda 2byte
+					;restamos ambas filas -> xmm0
+					psubw xmm0, xmm1
 
-				pslldq xmm1, 2	;shift a la izquierda 2byte
+					;tengo cada resultado, pero necesito el modulo
 
-				; resto xmm0 y xmm1 (que es xmm0 shifteado 2
-				; bytes = 1 elemento)
-				psubw xmm0, xmm1
-
-				;tengo cada resultado, pero necesito el modulo
-
-				pxor xmm4, xmm4
-				pcmpgtw xmm4, xmm0		;1s donde hay negativos
-				movdqu xmm3, xmm0
-
-				pcmpeqq xmm2, xmm2 ; pongo xmm2 todo con 1s
-				pxor xmm3, xmm2 ; niego xmm3
-				;psubw xmm3, 1 ; tengo el inverso en complemento a 2
+					;pxor xmm4, xmm4 		; xmm4 <- 0000
+					;pcmpgtw xmm4, xmm0		
+					;pcmpeqb xmm2, xmm2
+					;pxor xmm4, xmm2			; xmm4 <- 1s donde hay positivos de la resta 
+					
+					;movdqu xmm3, xmm0		; copio xmm0 para luego invertir los negativos
+					;pcmpeqb xmm2, xmm2 		
+					;pxor xmm3, xmm2 		; niego xmm3, con xmm2 todos con 1
+					;psubw xmm3, unos16b 	; resto por uno => tengo el inverso en complemento a 2
+					
+					; Remplazo negativos por los absolutos -> xmm0
+					;pand xmm0, xmm4			
+					;pcmpgtw xmm4, xmm0		;1s donde hay negativos
+					;pand xmm3, xmm4
+					;paddw xmm0, xmm4
+					
+					pabsw xmm0, xmm0		; valor absoluto
+					
+					packuswb xmm0, xmm0		; empaqueta los enteros a 8 bits
+		
+		
+				; Filtro en Y
+					
+					movdqa xmm1, xmm6
+					movdqa xmm2, xmm7
+					psrldq xmm1, 2
+					psubw xmm1, xmm2
+					pabsw xmm1, xmm1
+					packuswb xmm1, xmm1
+					
 				
-				
-				
+				paddusb xmm0, xmm1
+				movq [esi], xmm0
 				
 				
 				; Me faltan 7 elementos de esta fila menos
