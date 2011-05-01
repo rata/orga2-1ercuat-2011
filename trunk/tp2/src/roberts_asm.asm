@@ -125,8 +125,8 @@ roberts_asm:
 	
 	.fin:
 		push dword .w
-		push edi
 		push esi
+		push edi
 		call memcpy2
 		add esp, 12
 
@@ -170,4 +170,3 @@ memcpy2:
 		pop edi
 		pop ebp
 		ret
-
