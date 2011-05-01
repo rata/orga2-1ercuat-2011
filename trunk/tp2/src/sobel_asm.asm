@@ -52,6 +52,7 @@ sobel_asm:
 				;genero 7 pixels de imagen destino	
 				
 				; Cargo la fila anterior, actual y la siguiente fila
+				mov edx, .row_size
 				mov ebx, esi
 				sub ebx, edx
 				movq xmm0, [ebx]
