@@ -3,7 +3,7 @@ ASM = nasm
 DBG = gdb
 CFLAGS = -ggdb -Wall -std=c99 -pedantic
 ASMFLAGS = -felf32 -g -F dwarf
-OPENCV_LIB = `pkg-config --cflags --libs opencv`
+OPENCV_LIB = `pkg-config --cflags --libs opencv` -lm
 
 BIN = tpcopados
 BIN_DIR = ../bin
