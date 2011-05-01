@@ -131,8 +131,52 @@ roberts_asm:
 	
 	.fin:
 		; TODO: copiar la ultima fila tal como esta
+		push dword .w
+		push edi
+		push esi
+		call memcpy2
+		add esp, 12
+
 		pop ebx
 		pop esi
 		pop edi
 		pop ebp
 		ret
+
+
+; void *memcpy2(void *dest, const void *src, size_t n);
+memcpy2:
+	push ebp
+	mov ebp, esp
+	push edi
+	push esi
+	push ebx
+
+	mov edi, [ebp + 8]
+	mov esi, [ebp + 12]
+	mov ecx, [ebp + 16]
+
+        ; ecx: longitud
+        ; esi: src 
+        ; edi: dst
+        mov ecx, edi
+        mov esi, eax
+.copy:
+        cmp ecx, 0
+        je .fin
+
+        mov dl, [esi]
+        mov byte [edi], dl
+
+        inc esi
+        inc ebx
+        dec ecx
+        jmp .copy
+
+.fin:
+	pop ebx
+	pop esi
+	pop edi
+	pop ebp
+	ret
+
