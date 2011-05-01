@@ -50,11 +50,10 @@ roberts_asm:
 				movq xmm7, [edi + edx]
 				; los pongo como numero de 16 bits
 				; XXX: es little endian, de que "lado" van los 0s ?
+				; segun el manual (pag 248) asi creo que esta bien. Revisar
 				pxor xmm2, xmm2
-				PUNPCKLBW xmm6, xmm2 	;Unpack high data
-				PUNPCKHBW xmm7, xmm2
-				PUNPCKLBW xmm6, xmm2 	;Unpack high data
-				PUNPCKHBW xmm7, xmm2
+				punpcklbw xmm6, xmm2
+				punpcklbw xmm7, xmm2
 
 				;Filtro en x
 
