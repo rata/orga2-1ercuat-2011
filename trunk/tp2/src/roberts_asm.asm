@@ -9,12 +9,6 @@ unos16b: dq 0x0001000100010001
 section .text
 
 roberts_asm:
-	;unsigned char *src, [ebp + 8] 
-	;unsigned char *dst, [ebp + 12]
-	;int h, 			 [ebp + 16]
-	;int w, 			 [ebp + 20]
-	;int row_size		 [ebp + 24]
-	
 	push ebp
 	mov ebp, esp
 	push edi
@@ -26,8 +20,8 @@ roberts_asm:
 	%define .h [ebp + 16]
 	%define .w [ebp + 20]
 	%define .row_size [ebp + 24]
-	mov edi, .src		;ebx <- *src
-	mov esi, .dst		;esi <- *dst
+	mov esi, .src		;ebx <- *src
+	mov edi, .dst		;esi <- *dst
 	mov eax, .h	        ;eax <- height
 	mov ecx, .w		    ;ecx <- width
 	mov edx, .row_size	;edx <- row_size
@@ -51,8 +45,8 @@ roberts_asm:
 				
 				; Cargo la fila actual y la siguiente fila
 				mov edx, .row_size
-				movq xmm6, [edi]
-				movq xmm7, [edi + edx]
+				movq xmm6, [esi]
+				movq xmm7, [esi + edx]
 				; los pongo como entero de 16 bits
 				pxor xmm0, xmm0
 				punpcklbw xmm6, xmm0 
@@ -86,7 +80,7 @@ roberts_asm:
 				packuswb xmm2, xmm2
 				
 				paddusb xmm0, xmm2
-				movq [esi], xmm0
+				movq [edi], xmm0
 				
 				
 				; Me faltan 7 elementos de esta fila menos
@@ -109,8 +103,8 @@ roberts_asm:
 			
 			.copiar_el_ultimo:
 				; copiar el byte
-				mov bx, [edi]
-				mov [esi], bx
+				mov bx, [esi]
+				mov [edi], bx
 				
 				dec ecx
 				inc edi
@@ -130,7 +124,6 @@ roberts_asm:
 				jmp .loop_h
 	
 	.fin:
-		; TODO: copiar la ultima fila tal como esta
 		push dword .w
 		push edi
 		push esi
