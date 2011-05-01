@@ -50,61 +50,42 @@ roberts_asm:
 				;genero 7 pixels de imagen destino	
 				
 				; Cargo la fila actual y la siguiente fila
+				mov edx, .row_size
 				movq xmm6, [edi]
 				movq xmm7, [edi + edx]
 				; los pongo como entero de 16 bits
-				pxor xmm2, xmm2
-				punpcklbw xmm6, xmm2 
-				punpcklbw xmm7, xmm2
+				pxor xmm0, xmm0
+				punpcklbw xmm6, xmm0 
+				punpcklbw xmm7, xmm0
 				
 				; xmm6 <- fila actual
 				; xmm7 <- fila siguiente
 
-				;Filtro en x
+				;Filtro en X e Y
 					
-					; copio ambas filas en registros 0 y 1
-					movdqa xmm0, xmm6
-					movdqa xmm1, xmm7
+				; copio ambas filas en registros 0 y 1
+				movdqa xmm0, xmm6
+				movdqa xmm1, xmm7
+				movdqa xmm2, xmm6
+				movdqa xmm3, xmm7
 
-					; alineamos para operar en paralelo las diagonales
-					psrldq xmm1, 2	;shift a la izquierda 2byte
-					;restamos ambas filas -> xmm0
-					psubw xmm0, xmm1
-
-					;tengo cada resultado, pero necesito el modulo
-
-					;pxor xmm4, xmm4 		; xmm4 <- 0000
-					;pcmpgtw xmm4, xmm0		
-					;pcmpeqb xmm2, xmm2
-					;pxor xmm4, xmm2			; xmm4 <- 1s donde hay positivos de la resta 
-					
-					;movdqu xmm3, xmm0		; copio xmm0 para luego invertir los negativos
-					;pcmpeqb xmm2, xmm2 		
-					;pxor xmm3, xmm2 		; niego xmm3, con xmm2 todos con 1
-					;psubw xmm3, unos16b 	; resto por uno => tengo el inverso en complemento a 2
-					
-					; Remplazo negativos por los absolutos -> xmm0
-					;pand xmm0, xmm4			
-					;pcmpgtw xmm4, xmm0		;1s donde hay negativos
-					;pand xmm3, xmm4
-					;paddw xmm0, xmm4
-					
-					pabsw xmm0, xmm0		; valor absoluto
-					
-					packuswb xmm0, xmm0		; empaqueta los enteros a 8 bits
-		
-		
-				; Filtro en Y
-					
-					movdqa xmm1, xmm6
-					movdqa xmm2, xmm7
-					psrldq xmm1, 2
-					psubw xmm1, xmm2
-					pabsw xmm1, xmm1
-					packuswb xmm1, xmm1
-					
+				; alineamos para operar en paralelo las diagonales
+				psrldq xmm1, 2
+				psrldq xmm2, 2
 				
-				paddusb xmm0, xmm1
+				;restamos ambas filas
+				psubw xmm0, xmm1		
+				psubw xmm2, xmm3
+				
+				; valor absoluto
+				pabsw xmm0, xmm0		
+				pabsw xmm2, xmm2
+				
+				; empaqueta los enteros a 8 bits
+				packuswb xmm0, xmm0		
+				packuswb xmm2, xmm2
+				
+				paddusb xmm0, xmm2
 				movq [esi], xmm0
 				
 				
