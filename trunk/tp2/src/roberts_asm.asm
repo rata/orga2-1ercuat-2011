@@ -156,27 +156,25 @@ memcpy2:
 	mov esi, [ebp + 12]
 	mov ecx, [ebp + 16]
 
-        ; ecx: longitud
-        ; esi: src 
-        ; edi: dst
-        mov ecx, edi
-        mov esi, eax
-.copy:
-        cmp ecx, 0
-        je .fin
+	; ecx: longitud
+	; esi: src 
+	; edi: dst
+	.copy:
+		cmp ecx, 0
+		je .fin
 
-        mov dl, [esi]
-        mov byte [edi], dl
+		mov dl, [esi]
+		mov byte [edi], dl
 
-        inc esi
-        inc ebx
-        dec ecx
-        jmp .copy
+		inc esi
+		inc ebx
+		dec ecx
+		jmp .copy
 
-.fin:
-	pop ebx
-	pop esi
-	pop edi
-	pop ebp
-	ret
+	.fin:
+		pop ebx
+		pop esi
+		pop edi
+		pop ebp
+		ret
 
