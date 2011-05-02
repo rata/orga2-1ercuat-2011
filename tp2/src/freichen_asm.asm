@@ -51,7 +51,7 @@ freichen_asm:
 
 			.cargo_elementos:
 				;cargo 8 elementos
-				;genero 7 pixels de imagen destino	
+				;genero 6 pixels de imagen destino	
 				
 				; Cargo la fila anterior, actual y la siguiente fila
 				mov edx, .row_size
