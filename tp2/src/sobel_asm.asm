@@ -1,6 +1,7 @@
 ; void sobel_asm (unsigned char *src, unsigned char *dst, int h, int w, int row_size)
 
 global sobel_asm
+extern memcpy2
 
 sobel_asm:
 	push ebp
@@ -21,7 +22,14 @@ sobel_asm:
 	mov edx, .row_size	;edx <- row_size
 		
 	; la primer fila no la procesamos (no le podemos aplicar filtros)
-	; TODO: copiarla tal como esta
+	; asique la copiamos como esta
+	push dword .w ; longitud
+	push esi ; source
+	push edi ; dst
+	call memcpy2
+	add esp, 12
+
+	; avanzo a la segunda fila
 	add esi, edx
 	add edi, edx
 	dec eax
@@ -129,7 +137,13 @@ sobel_asm:
 				dec eax
 				jmp .loop_h
 .fin:
-	; TODO: copiar la ultima fila tal como esta
+	; Copiamos la ultima fila (que no se le puede aplicar filtros)
+	push dword .w ; longitud
+	push esi ; source
+	push edi ; dst
+	call memcpy2
+	add esp, 12
+
 	pop ebx
 	pop esi
 	pop edi
