@@ -165,6 +165,7 @@ roberts_asm:
 
 
 ; void *memcpy2(void *dest, const void *src, size_t n);
+; protege TODOS los registros
 memcpy2:
 	push ebp
 	mov ebp, esp
@@ -174,13 +175,13 @@ memcpy2:
 
 	mov edi, [ebp + 8]
 	mov esi, [ebp + 12]
-	mov ecx, [ebp + 16]
+	mov ebx, [ebp + 16]
 
-	; ecx: longitud
+	; ebx: longitud
 	; esi: src 
 	; edi: dst
 	.copy:
-		cmp ecx, 0
+		cmp ebx, 0
 		je .fin
 
 		mov dl, [esi]
@@ -188,7 +189,7 @@ memcpy2:
 
 		inc esi
 		inc ebx
-		dec ecx
+		dec ebx
 		jmp .copy
 
 	.fin:
