@@ -71,19 +71,36 @@ roberts_asm:
 				psubw xmm2, xmm3
 				
 				; valor absoluto
-			
 				;tengo cada resultado, pero necesito el modulo
-				;pxor xmm4, xmm4
-				;pcmpgtw xmm4, xmm0		;1s donde hay negativos
-				;movdqu xmm5, xmm0
-
-				;pcmpeqq xmm6, xmm6 ; pongo xmm2 todo con 1s
-				;pxor xmm5, xmm6 ; niego xmm3
-				;movdqu xmm7, [unos16b]
-				;psubw xmm5, xmm7 ; tengo el inverso en complemento a 2
+				pxor xmm4, xmm4
+				pcmpgtw xmm4, xmm0		;1s donde hay negativo en 4
+				movdqu xmm5, xmm0
+				pand xmm5, xmm4 		; me deja solo negativos en 5
+				pcmpeqb xmm6, xmm6 		
+				pxor xmm5, xmm6 		; niego xmm5
+				movdqu xmm7, [unos16b]
+				paddw xmm5, xmm7 		; tengo el inverso en complemento a 2
+				pxor xmm4, xmm6			; niego mascara
+				pand xmm0, xmm4			; saco los negativos de 0
+				paddw xmm0, xmm5		; sumo los valores absolutos que tenia en 5
 	
-				pabsw xmm0, xmm0		
-				pabsw xmm2, xmm2
+				; le saco el modulo a xmm2
+				pxor xmm4, xmm4
+				pcmpgtw xmm4, xmm2		;1s donde hay negativo en 4
+				movdqu xmm5, xmm2
+				pand xmm5, xmm4 		; me deja solo negativos en 5
+				pcmpeqb xmm6, xmm6 		
+				pxor xmm5, xmm6 		; niego xmm5
+				movdqu xmm7, [unos16b]
+				paddw xmm5, xmm7 		; tengo el inverso en complemento a 2
+				pxor xmm4, xmm6			; niego mascara
+				pand xmm2, xmm4			; saco los negativos de 0
+				paddw xmm2, xmm5		; sumo los valores absolutos que tenia en 5
+
+				
+				; no todos tenemos SSE3, asique no usamos pabs
+				;pabsw xmm0, xmm0
+				;pabsw xmm2, xmm2
 				
 				; empaqueta los enteros a 8 bits
 				packuswb xmm0, xmm0		
