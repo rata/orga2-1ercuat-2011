@@ -172,6 +172,7 @@ memcpy2:
 	push edi
 	push esi
 	push ebx
+	push edx
 
 	mov edi, [ebp + 8]
 	mov esi, [ebp + 12]
@@ -188,11 +189,12 @@ memcpy2:
 		mov byte [edi], dl
 
 		inc esi
-		inc ebx
+		inc edi
 		dec ebx
 		jmp .copy
 
 	.fin:
+		pop edx
 		pop ebx
 		pop esi
 		pop edi
