@@ -33,20 +33,22 @@ freichen_asm:
 		
 		; me salteo la primer columna (no le puedo aplicar filtros)
 		; Asique copio el elemento tal como esta
+		; NO incremento esi/edi porque los necesito para la cuenta del pixel siguiente
 		mov bx, [esi]
 		mov [edi], bx
-		inc edi
-		inc esi
-		dec ecx
 
 		.loop_w:
 			cmp ecx, 8
 			jge .cargo_elementos
-			cmp ecx, 1
-			jl .loop_w_fin
-			je .copiar_el_ultimo
+
+			cmp ecx, 2
+			je .copiar_ultimos
 			jg .loop_w_last_iter
-		
+
+			; ya termine con esta fila
+			cmp ecx, 0
+			je .loop_w_fin
+
 			.cargo_elementos:
 				;cargo 8 elementos
 				;genero 7 pixels de imagen destino	
@@ -68,15 +70,21 @@ freichen_asm:
 
 
 				; si la respuesta (empaquetada a 16 bits) esta
-				; en xmm1, la ponemos en la parte baja de xmm1 y la escribimos en dst
+				; en xmm1, la ponemos en la parte baja de xmm1
 				packuswb xmm1, xmm1
-				movq [edi], xmm1
+
+				; Escribimos en edi + 1 porque: edi y esi
+				; apuntan un byte antes del que quiero escribir
+				; (porque necesito la info del pixel anterior para hacer la cuenta)
+				; Pero lo que calcule es para el pixel
+				; siguienta al que apunta (y los sucesivos), asique escribo apartir de ahi
+				movq [edi + 1], xmm1
 
 
-				; Me faltan 7 elementos de esta fila menos
-				sub ecx, 7
-				add edi, 7
-				add esi, 7
+				; Me faltan 6 elementos de esta fila menos
+				sub ecx, 6
+				add edi, 6
+				add esi, 6
 				jmp .loop_w
 			
 			.loop_w_last_iter:
@@ -91,14 +99,23 @@ freichen_asm:
 				mov ecx, 8
 				jmp .loop_w
 			
-			.copiar_el_ultimo:
-				; copiar el byte
-				mov bx, [esi]
-				mov [edi], bx
-				
+			.copiar_ultimos:
+				; El actual ya fue escrito
+				; en la iteracion anterior, pero el puntero no
+				; se avanzo porque para calcular el pixel
+				; siguiente necesito el pixel anterior. Asique el actual
+				; lo dejo como esta(pues ya fue procesado), y copio solo el siguiente
+				; (porque no se le puede aplicar el filtro porque el ultimo no tiene siguiente)
 				dec ecx
 				inc edi
 				inc esi
+
+				mov bx, [esi]
+				mov [edi], bx
+				dec ecx
+				inc edi
+				inc esi
+
 				jmp .loop_w
 
 			.loop_w_fin:
