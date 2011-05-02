@@ -3,8 +3,7 @@
 global roberts_asm
 
 section .rodata
-unos16b: dq 0x0001000100010001
-		dq 0x0001000100010001
+unos16b: dq 0x0001000100010001, 0x0001000100010001
 
 section .text
 
@@ -72,6 +71,17 @@ roberts_asm:
 				psubw xmm2, xmm3
 				
 				; valor absoluto
+			
+				;tengo cada resultado, pero necesito el modulo
+				;pxor xmm4, xmm4
+				;pcmpgtw xmm4, xmm0		;1s donde hay negativos
+				;movdqu xmm5, xmm0
+
+				;pcmpeqq xmm6, xmm6 ; pongo xmm2 todo con 1s
+				;pxor xmm5, xmm6 ; niego xmm3
+				;movdqu xmm7, [unos16b]
+				;psubw xmm5, xmm7 ; tengo el inverso en complemento a 2
+	
 				pabsw xmm0, xmm0		
 				pabsw xmm2, xmm2
 				
