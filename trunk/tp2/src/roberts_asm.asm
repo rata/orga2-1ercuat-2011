@@ -1,6 +1,6 @@
 ; void roberts_asm (unsigned char *src, unsigned char *dst, int h, int w, int row_size)
 
-global roberts_asm
+global roberts_asm, memcpy2
 
 section .rodata
 unos16b: dq 0x0001000100010001, 0x0001000100010001
