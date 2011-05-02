@@ -166,6 +166,7 @@ roberts_asm:
 
 ; void *memcpy2(void *dest, const void *src, size_t n);
 ; protege TODOS los registros
+; XXX: usar SSE nos serviria de algo ? Pensarlo
 memcpy2:
 	push ebp
 	mov ebp, esp
