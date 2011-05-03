@@ -3,6 +3,11 @@
 global prewitt_asm
 extern memcpy2
 
+section .rodata
+unos16b: dq 0x0001000100010001, 0x0001000100010001
+
+section .text
+
 prewitt_asm:
 	push ebp
 	mov ebp, esp
@@ -64,28 +69,93 @@ prewitt_asm:
 				mov edx, .row_size
 				mov ebx, esi
 				sub ebx, edx
-				movq xmm0, [ebx]
-				movq xmm1, [esi]
-				movq xmm2, [esi + edx]
+				
+				movq xmm5, [ebx]
+				movq xmm6, [esi]
+				movq xmm7, [esi + edx]
 
 				; los pongo como entero de 16 bits
-				pxor xmm2, xmm2
-				punpcklbw xmm0, xmm2 
-				punpcklbw xmm1, xmm2
-				punpcklbw xmm2, xmm2
+				pxor xmm0, xmm0
+				punpcklbw xmm5, xmm0 
+				punpcklbw xmm6, xmm0
+				punpcklbw xmm7, xmm0
 
+				movdqa xmm0, xmm5
+				movdqa xmm1, xmm6
+				movdqa xmm2, xmm7
 
+				; Filtro X
+				
+				; suma empaquetada de columnas
+				paddw xmm0, xmm1
+				paddw xmm0, xmm2
+				
+				;hago una copia de la suma, shifteo para alinear 1era col con 3ra.
+				movdqa xmm1, xmm0
+				psrldq xmm1, 4
+				psubw xmm1, xmm0 ; xmm1 <- resultado
 
-				; si la respuesta (empaquetada a 16 bits) esta
-				; en xmm1, la ponemos en la parte baja de xmm1
-				packuswb xmm1, xmm1
+				movdqa xmm2, xmm1 ; xmm2 <- resultado en x
+				
+				; Filtro Y
+				
+				;resto primera y ultima fila
+				psubw xmm7, xmm5
+			
+				; 3 copias, y las alineo
+				movdqa xmm0, xmm7
+				psrldq xmm0, 2
+				movdqa xmm1, xmm7
+				psrldq xmm1, 4
+				
+				paddw xmm0, xmm7
+				paddw xmm0, xmm1
+				
+				; xmm0 <- Res filtro x
+				
+				; valor absoluto
+				;tengo cada resultado, pero necesito el modulo
+				pxor xmm4, xmm4
+				pcmpgtw xmm4, xmm0		;1s donde hay negativo en 4
+				movdqu xmm5, xmm0
+				pand xmm5, xmm4 		; me deja solo negativos en 5
+				pcmpeqb xmm6, xmm6 		
+				pxor xmm5, xmm6 		; niego xmm5
+				movdqu xmm7, [unos16b]
+				paddw xmm5, xmm7 		; tengo el inverso en complemento a 2
+				pxor xmm4, xmm6			; niego mascara
+				pand xmm0, xmm4			; saco los negativos de 0
+				paddw xmm0, xmm5		; sumo los valores absolutos que tenia en 5
+				
+				; valor absoluto
+				;tengo cada resultado, pero necesito el modulo
+				pxor xmm4, xmm4
+				pcmpgtw xmm4, xmm2		;1s donde hay negativo en 4
+				movdqu xmm5, xmm2
+				pand xmm5, xmm4 		; me deja solo negativos en 5
+				pcmpeqb xmm6, xmm6 		
+				pxor xmm5, xmm6 		; niego xmm5
+				movdqu xmm7, [unos16b]
+				paddw xmm5, xmm7 		; tengo el inverso en complemento a 2
+				pxor xmm4, xmm6			; niego mascara
+				pand xmm2, xmm4			; saco los negativos de 0
+				paddw xmm2, xmm5		; sumo los valores absolutos que tenia en 5
 
-				; Escribimos en edi + 1 porque: edi y esi
+				
+				; Empaqueto ambos filtros a enteros de byte sin signo
+				packuswb xmm0, xmm0		
+				packuswb xmm2, xmm2
+
+				; Suma empaquetada a byte con saturacion
+				paddusb xmm0, xmm2
+			
+
+				; Escribimos en (edi + 1) porque: edi y esi
 				; apuntan un byte antes del que quiero escribir
 				; (porque necesito la info del pixel anterior para hacer la cuenta)
 				; Pero lo que calcule es para el pixel
 				; siguienta al que apunta (y los sucesivos), asique escribo apartir de ahi
-				movq [edi + 1], xmm1
+				movq [edi + 1], xmm0
 
 
 				; Me faltan 6 elementos de esta fila menos
