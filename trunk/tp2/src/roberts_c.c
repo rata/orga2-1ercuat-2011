@@ -20,7 +20,5 @@ void roberts_c (unsigned char *src, unsigned char *dst, int h, int w, int row_si
 			
 			dst[curpixel] = saturar(abs(filtro_x) + abs(filtro_y));
 		}
-		dst[row_size * y + w -1] = src[row_size * y + w -1];
 	}
-	memcpy(dst + row_size * h - 1, src + row_size * h - 1, w);
 }
