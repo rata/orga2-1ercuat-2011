@@ -3,7 +3,7 @@
 global gris_epsilon_inf_asm
 
 section .rodata
-pshuf: dq 0x0369C00000000000, 0x0000000000000000
+pshuf: dq 0x0000000C09060300, 0x0000000000000000
 
 section .text
 
@@ -71,7 +71,8 @@ gris_epsilon_inf_asm:
 				movd edx, xmm0
 				mov [edi], edx
 
-				psrldq xmm1, 4
+				; bajo el quinto byte que me faltaba
+				psrldq xmm0, 4
 				movd edx, xmm0
 				mov [edi + 4], dl
 
@@ -86,17 +87,21 @@ gris_epsilon_inf_asm:
 			
 			.loop_w_last_iter:
 				; Cargo los ultimos 16 bytes
-				;lea ecx, [ecx * 3]
-				;mov edx, 16
-				mov edx, 6
-				
+				push ecx
+				lea ecx, [ecx * 3]
+				mov edx, 16
 				sub edx, ecx
 				sub esi, edx
 				movdqu xmm6, [esi]
 
 				; Dejo esi apuntando al siguiente porque el primer byte lo voy a descartar 
 				add esi, 1
-				sub edi, 3
+
+				; Quedaban ecx filas. Ahora, al moverme para atras, debo ajustar edi tambien
+				pop ecx
+				mov edx, 5
+				sub edx, ecx
+				sub edi, edx
 
 				; Tiro el primero (me interesan los ultimos 15)
 				psrldq xmm6, 1
