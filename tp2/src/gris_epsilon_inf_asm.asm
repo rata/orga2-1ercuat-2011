@@ -5,6 +5,8 @@ global gris_epsilon_inf_asm
 section .rodata
 pshuf: dq 0x0369C00000000000, 0x0000000000000000
 
+section .text
+
 gris_epsilon_inf_asm:
 	push ebp
 	mov ebp, esp
@@ -62,7 +64,8 @@ gris_epsilon_inf_asm:
 				pmaxub xmm0, xmm2
 
 				; Tengo los 5 bytes que quiero en las posiciones 3k del registro, asique dejo los 5 que me ineresan en las primeros 5 bytes
-				pshufb xmm0, [pshuf]
+				movdqu xmm3, [pshuf]
+				pshufb xmm0, xmm3
 				
 				; bajo los 32 bits mas bajos
 				movd edx, xmm0
@@ -83,13 +86,17 @@ gris_epsilon_inf_asm:
 			
 			.loop_w_last_iter:
 				; Cargo los ultimos 16 bytes
+				;lea ecx, [ecx * 3]
+				;mov edx, 16
 				mov edx, 6
+				
 				sub edx, ecx
 				sub esi, edx
-				movq xmm6, [esi]
+				movdqu xmm6, [esi]
 
 				; Dejo esi apuntando al siguiente porque el primer byte lo voy a descartar 
 				add esi, 1
+				sub edi, 3
 
 				; Tiro el primero (me interesan los ultimos 15)
 				psrldq xmm6, 1
