@@ -5,6 +5,8 @@ TESTINDIR=../data/test-in
 TESTOUTDIR=../data/test-out
 BINFILE=../bin/tpcopados
 
+set -e
+ulimit -s unlimited
 OKVALGRIND=1
 
 echo 'Iniciando test de memoria...' 
