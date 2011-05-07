@@ -65,7 +65,7 @@ gris_epsilon_uno_asm:
 
 				; divido por 4 cada numero
 				; XXX: esta bien shiftear asi ?
-				psrlw xmm0, 4
+				psrlw xmm0, 2
 
 				; En en primer y cuarto elemento tengo las dos words que quiero
 				; XXX: estoy agarrando lo que quiero asi ?
