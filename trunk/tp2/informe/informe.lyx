@@ -81,7 +81,7 @@ Los algoritmos utilizados son algoritmos sobre imágenes.
 \end_layout
 
 \begin_layout Standard
-Para la implementación en ASM, se trabajó con la arquitectura IA-32 de Intel.
+Para la implementación en ASM se trabajó con la arquitectura IA-32 de Intel.
 \end_layout
 
 \begin_layout Section*
@@ -118,24 +118,35 @@ Detección de bordes
 Las imágenes en escala de grises que se toman por parámetro (tanto la imágen
  destino como la fuente) son arreglos de enteros de 8 bits sin signo, donde
  cada elemento representa un pixel.
- Aplicando los distintos filtros debemos escribir en la imágen destino la
- imágen fuente filtrada.
+ Aplicando los distintos filtros debemos escribir, en la imágen destino,
+ la imágen fuente filtrada.
 \end_layout
 
 \begin_layout Standard
 Los filtros consisten en modificar un pixel a partir de una mascara aplicada
  sobre los pixeles vecinos.
- Esto implica que trabaja con elementos de varias filas contiguas, que en
- arreglos significa cargar cadenas de bytes no consecutivas.
  Debido al tamaño de las máscaras (de 2x2 o 3x3), los coeficientes que utiliza
  cada filtro y que los registros SSE son de 16 bytes, podemos aplicar más
  de una máscara en una iteración.
 \end_layout
 
 \begin_layout Standard
-En todos los filtros, para calcular el resultado deseado por pixel sin perder
- correctitud, se decidió extender/convertir los elementos a enteros de 16bits
- (o a floats de 32bits en el caso del filtro Frei-Chen).
+En todos los filtros salvo uno de conversión a escala de grises, para calcular
+ el resultado deseado en cada pixel sin perder correctitud, se decidió extender/
+convertir los elementos a enteros de 16bits (o a floats de 32bits en el
+ caso del filtro Frei-Chen).
+ Con 16 bits es suficiente ya que ningún filtro utiliza más de 6 sumas y
+ dos multiplicaciones, y considerando que cada suma o multiplicación (como
+ los coeficientes son 
+\begin_inset Formula $2$
+\end_inset
+
+ y 
+\begin_inset Formula $\sqrt{2}$
+\end_inset
+
+) a lo sumo agrega un bit, esto resulta en peor caso en 16 bits, ya que
+ los números con que se opera son de 8 bits.
 \end_layout
 
 \begin_layout Subsubsection*
@@ -288,7 +299,7 @@ Cargar 8 bytes en la parte baja de XMM6 y 8 bytes de la fila debajo en la
 \end_inset
 
 
-\begin_inset Formula $movq\, XMM6,[src_{i,j}]$
+\begin_inset Formula $movq\, XMM6,\,[src_{i,j}]$
 \end_inset
 
 
@@ -296,7 +307,7 @@ Cargar 8 bytes en la parte baja de XMM6 y 8 bytes de la fila debajo en la
 \end_inset
 
 
-\begin_inset Formula $movq\, XMM7,[src_{i+1,j}]$
+\begin_inset Formula $movq\, XMM7,\,[src_{i+1,j}]$
 \end_inset
 
 
@@ -526,7 +537,7 @@ Como en la parte baja de XMM6 y XMM7 hay hay enteros de 8 bits sin signo,
 \end_inset
 
 
-\begin_inset Formula $pxor\, XMM0,XMM0$
+\begin_inset Formula $pxor\, XMM0,\, XMM0$
 \end_inset
 
 
@@ -534,7 +545,7 @@ Como en la parte baja de XMM6 y XMM7 hay hay enteros de 8 bits sin signo,
 \end_inset
 
 
-\begin_inset Formula $punpcklbw\, XMM6,XMM0$
+\begin_inset Formula $punpcklbw\, XMM6,\, XMM0$
 \end_inset
 
 
@@ -542,7 +553,7 @@ Como en la parte baja de XMM6 y XMM7 hay hay enteros de 8 bits sin signo,
 \end_inset
 
 
-\begin_inset Formula $punpcklbw\, XMM7,XMM0$
+\begin_inset Formula $punpcklbw\, XMM7,\, XMM0$
 \end_inset
 
 
@@ -1077,7 +1088,7 @@ Sumamos XMM0 y XMM2 con saturación de a bytes sin signo.
 \end_inset
 
 
-\begin_inset Formula $paddusb\, XMM0,XMM2$
+\begin_inset Formula $paddusb\, XMM0,\, XMM2$
 \end_inset
 
 
@@ -1403,7 +1414,7 @@ Cargar la fila anterior, actual y siguiente en XMM5, XMM6 y XMM7 respectivamente
 \end_inset
 
 
-\begin_inset Formula $movq\, XMM5,[src_{i-1,j}]$
+\begin_inset Formula $movq\, XMM5,\,[src_{i-1,j}]$
 \end_inset
 
 
@@ -1411,7 +1422,7 @@ Cargar la fila anterior, actual y siguiente en XMM5, XMM6 y XMM7 respectivamente
 \end_inset
 
 
-\begin_inset Formula $movq\, XMM6,[src_{i,j}]$
+\begin_inset Formula $movq\, XMM6,\,[src_{i,j}]$
 \end_inset
 
 
@@ -1419,7 +1430,7 @@ Cargar la fila anterior, actual y siguiente en XMM5, XMM6 y XMM7 respectivamente
 \end_inset
 
 
-\begin_inset Formula $movq\, XMM7,[src_{i+1,j}]$
+\begin_inset Formula $movq\, XMM7,\,[src_{i+1,j}]$
 \end_inset
 
 
@@ -1755,7 +1766,7 @@ Como en la parte baja de XMM5, XMM6 y XMM7 hay hay enteros de 8 bits sin
 \end_inset
 
 
-\begin_inset Formula $punpcklbw\, XMM5,XMM0$
+\begin_inset Formula $punpcklbw\, XMM5,\, XMM0$
 \end_inset
 
 
@@ -1763,7 +1774,7 @@ Como en la parte baja de XMM5, XMM6 y XMM7 hay hay enteros de 8 bits sin
 \end_inset
 
 
-\begin_inset Formula $punpcklbw\, XMM6,XMM0$
+\begin_inset Formula $punpcklbw\, XMM6,\, XMM0$
 \end_inset
 
 
@@ -1771,7 +1782,7 @@ Como en la parte baja de XMM5, XMM6 y XMM7 hay hay enteros de 8 bits sin
 \end_inset
 
 
-\begin_inset Formula $punpcklbw\, XMM7,XMM0$
+\begin_inset Formula $punpcklbw\, XMM7,\, XMM0$
 \end_inset
 
 
@@ -1824,7 +1835,7 @@ Calculamos la suma empaquetada de a words de XMM0, XMM1 y XMM2:
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM1$
+\begin_inset Formula $paddw\, XMM0,\, XMM1$
 \end_inset
 
 
@@ -1832,7 +1843,7 @@ Calculamos la suma empaquetada de a words de XMM0, XMM1 y XMM2:
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM2$
+\begin_inset Formula $paddw\, XMM0,\, XMM2$
 \end_inset
 
 
@@ -2199,7 +2210,7 @@ Suma empaquetada de a words de XMM0, XMM1 y XMM7
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM7$
+\begin_inset Formula $paddw\, XMM0,\, XMM7$
 \end_inset
 
 
@@ -2207,7 +2218,7 @@ Suma empaquetada de a words de XMM0, XMM1 y XMM7
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM1$
+\begin_inset Formula $paddw\, XMM0,\, XMM1$
 \end_inset
 
 
@@ -2386,7 +2397,7 @@ Empaquetar XMM0 y XMM2 a enteros de 8 bits sin signo
 \end_inset
 
 
-\begin_inset Formula $packuswb\, XMM0,XMM0$
+\begin_inset Formula $packuswb\, XMM0,\, XMM0$
 \end_inset
 
 
@@ -2394,7 +2405,7 @@ Empaquetar XMM0 y XMM2 a enteros de 8 bits sin signo
 \end_inset
 
 
-\begin_inset Formula $packuswb\, XMM2,XMM2$
+\begin_inset Formula $packuswb\, XMM2,\, XMM2$
 \end_inset
 
 
@@ -2406,7 +2417,7 @@ Suma saturada empaquetada de a byte de XMM0 y XMM2
 \end_inset
 
 
-\begin_inset Formula $paddusb\, XMM0,XMM2$
+\begin_inset Formula $paddusb\, XMM0,\, XMM2$
 \end_inset
 
 
@@ -2432,10 +2443,10 @@ De esta forma, se puede ver que las máscaras en
 \begin_inset Formula $s_{i,j+1}$
 \end_inset
 
-y sus 5 bytes siguientes.
+ y sus 5 bytes siguientes.
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsubsection*
 Filtro de Sobel
 \end_layout
 
@@ -2682,7 +2693,7 @@ Calculamos la suma empaquetada de a words de XMM0, XMM1 y XMM2:
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM1$
+\begin_inset Formula $paddw\, XMM0,\, XMM1$
 \end_inset
 
 
@@ -2690,7 +2701,7 @@ Calculamos la suma empaquetada de a words de XMM0, XMM1 y XMM2:
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM1$
+\begin_inset Formula $paddw\, XMM0,\, XMM1$
 \end_inset
 
 
@@ -2698,7 +2709,7 @@ Calculamos la suma empaquetada de a words de XMM0, XMM1 y XMM2:
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM2$
+\begin_inset Formula $paddw\, XMM0,\, XMM2$
 \end_inset
 
 
@@ -2830,7 +2841,7 @@ Suma empaquetada de a words de XMM0, XMM1 y XMM7
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM7$
+\begin_inset Formula $paddw\, XMM0,\, XMM7$
 \end_inset
 
 
@@ -2838,7 +2849,7 @@ Suma empaquetada de a words de XMM0, XMM1 y XMM7
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM7$
+\begin_inset Formula $paddw\, XMM0,\, XMM7$
 \end_inset
 
 
@@ -2846,7 +2857,7 @@ Suma empaquetada de a words de XMM0, XMM1 y XMM7
 \end_inset
 
 
-\begin_inset Formula $paddw\, XMM0,XMM1$
+\begin_inset Formula $paddw\, XMM0,\, XMM1$
 \end_inset
 
 
@@ -2904,7 +2915,7 @@ De esta forma se puede ver que si se continúa con el procedimiento utilizado
  en el filtro de Prewitt, se obtiene el resultado deseado.
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsubsection*
 Filtro de Frei-Chen
 \end_layout
 
@@ -2914,14 +2925,1761 @@ Filtro de Frei-Chen
  :-P
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsubsection*
 Conversión a escala de grises
 \end_layout
 
 \begin_layout Standard
-Con la excepcion de los algoritmos de conversion a escala de grises que
- toman como entrada una imagen de color RGB, donde cada pixel corresponde
- a 3 elementos del arreglo.
+A diferencia de los filtros de detección de bordes, al convertir una imágen
+ en escala de grises se debe recorrer la matriz entera, incluyendo los bordes.
+ Cada pixel de la imágen fuente se corresponde con 3 bytes utilizados para
+ representar la intensidad de rojo, verde y azúl de ese pixel.
+ Es decir, la imágen fuente se puede ver como un arreglo de elementos de
+ 24 bits sin signo.
+\end_layout
+
+\begin_layout Standard
+Como función de monocromatización se utilizaron dos casos particulares de
+ la siguiente función que toma un pixel 
+\begin_inset Formula $p$
+\end_inset
+
+ y donde 
+\begin_inset Formula $R$
+\end_inset
+
+, 
+\begin_inset Formula $G$
+\end_inset
+
+ y 
+\begin_inset Formula $B$
+\end_inset
+
+ son sus componentes de intensidad roja, verde y azul:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(p)=\sqrt[\epsilon]{\alpha R^{\epsilon}+\beta G^{\epsilon}+\gamma B^{\epsilon}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es decir, si aplicamos la función a un pixel con componentes 
+\begin_inset Formula $R$
+\end_inset
+
+, 
+\begin_inset Formula $G$
+\end_inset
+
+ y 
+\begin_inset Formula $B$
+\end_inset
+
+ obtenemos el valor correspondiente a su representación en escala de grises.
+ Si aplicamos la función a todos los pixeles de una imágen y generamos una
+ imágen del mismo tamaño que la original, donde cada pixel es el resultado
+ de aplicarle la función al pixel de esa posición en la imágen original,
+ obtenemos la conversión de la imágen original a escala de grises.
+\end_layout
+
+\begin_layout Standard
+Los casos particulares utilizados son por un lado tomando 
+\begin_inset Formula $\alpha=\frac{1}{4}$
+\end_inset
+
+, 
+\begin_inset Formula $\beta=\frac{1}{2}$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma=\frac{1}{4}$
+\end_inset
+
+ y 
+\begin_inset Formula $\epsilon=1$
+\end_inset
+
+ y por otro lado, esos mismos parámetros pero cuando 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ tiende a infinito.
+\end_layout
+
+\begin_layout Subsubsection*
+Conversión a escala de grises con 
+\begin_inset Formula $\epsilon=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La función de monocromatización cuando fijamos los parámetros 
+\begin_inset Formula $\alpha=\frac{1}{4}$
+\end_inset
+
+, 
+\begin_inset Formula $\beta=\frac{1}{2}$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma=\frac{1}{4}$
+\end_inset
+
+ y 
+\begin_inset Formula $\epsilon=1$
+\end_inset
+
+ resulta:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f_{uno}(p)=\frac{R+2G+B}{4}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Al ser 
+\begin_inset Formula $R$
+\end_inset
+
+, 
+\begin_inset Formula $G$
+\end_inset
+
+ y 
+\begin_inset Formula $B$
+\end_inset
+
+ números de 8 bits, el numerador no podrá ser mayor que 
+\begin_inset Formula $255+2\times255+255=1020$
+\end_inset
+
+ por lo que la fracción no podrá ser mayor que 
+\begin_inset Formula $1020/4=255$
+\end_inset
+
+.
+ Es decir, si se trabaja con 16 bits el numerador nunca podrá ocasionar
+ overflow y el resultado siempre entrará en un entero de 8 bits sin signo.
+\end_layout
+
+\begin_layout Standard
+El algoritmo utilizado para su cálculo es el siguiente:
+\end_layout
+
+\begin_layout Enumerate
+Cargar 8 bytes en la parte baja de XMM6
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $movq\, XMM6,\,[src_{i,j}]$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="8">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+7}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Como en la parte baja de XMM6 hay enteros de 8 bits sin signo, utilizamos
+ la instrucion PUNPCKLBW para extener los elementos a números de 16 bits
+ con signo
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $pxor\, XMM0,XMM0$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $punpcklbw\, XMM6,XMM0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Mantener una copia de XMM6 en XMM0, XMM1 y XMM2
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $XMM0\leftarrow XMM6$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $XMM1\leftarrow XMM6$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $XMM2\leftarrow XMM6$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Shift de 1 elemento en XMM1 y de 2 elementos en XMM2:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $psrldq\, xmm1,\,2$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $psrldq\, xmm2,\,4$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="8">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+7}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+7}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Suma empaquetada de a words de XMM0 y XMM1
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j}+src_{i,j+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}+src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}+src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}+src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}+src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Suma empaquetada de a words de XMM0 y XMM1
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j}+2src_{i,j+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}+2src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}+2src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}+2src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}+2src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Suma empaquetada de a words de XMM0 y XMM2
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j}+2src_{i,j+1}+src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}+2src_{i,j+2}+src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}+2src_{i,j+4}+src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Pongo el cuarto elemento como segundo y mantengo el primero en el primer
+ lugar
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $pshuflw\, xmm0,\, xmm0,\,0x30$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j}+2src_{i,j+1}+src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}+2src_{i,j+4}+src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Empaqueto XMM0 como enteros de 8 bits sin signo
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $packuswb\, xmm0,\, xmm0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Escribo los primeros 16 bytes de XMM0 en la imágen destino
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $movd\, edx,\, xmm0$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $mov\,[dst],\, dx$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+De esta forma, se puede ver que el valor calculado en las primeros dos elementos
+ de XMM0 se corresponde con el valor de aplicar la función a los pixeles
+ 
+\begin_inset Formula $src_{i,j}$
+\end_inset
+
+ y el siguiente.
+\end_layout
+
+\begin_layout Subsubsection*
+Conversión a escala de grises con 
+\begin_inset Formula $\epsilon=\infty$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La función de monocromatización cuando fijamos los parámetros 
+\begin_inset Formula $\alpha=\frac{1}{4}$
+\end_inset
+
+, 
+\begin_inset Formula $\beta=\frac{1}{2}$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma=\frac{1}{4}$
+\end_inset
+
+ y 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ tendiendo a infinito, resulta:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f_{\infty}(p)=max(R,G,B)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como la función no implica hacer ninguna cuenta con los números, solo fijarse
+ el mayor, no los extenderemos a 16 bits.
+ Cargaremos 16 bytes y generaremos 5 pixeles de la imágen destino en cada
+ iteración.
+\end_layout
+
+\begin_layout Standard
+Una iteración del algoritmo utilizado es el siguiente:
+\end_layout
+
+\begin_layout Enumerate
+Cargar 16 bytes en XMM6
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $movdqu\, XMM6,\,[src_{i,j}]$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="9">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+7}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Mantener una copia de XMM6 en XMM0, XMM1 y XMM2
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $XMM0\leftarrow XMM6$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $XMM1\leftarrow XMM6$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $XMM2\leftarrow XMM6$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Shift de 1 elemento en XMM1 y de 2 elementos en XMM2:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $psrldq\, xmm1,\,1$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $psrldq\, xmm2,\,2$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="7">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+4}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+5}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $src_{i,j+7}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Calcular el maximo empaquetado de a bytes de XMM0 y XMM1
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="8">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j},s_{i,j+1})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j+3},s_{i,j+4})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j+6},s_{i,j+7})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Calcular el maximo empaquetado de a bytes de XMM0 y XMM2
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="8">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j},s_{i,j+1},s_{i,j+2})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j+3},s_{i,j+4},s_{i,j+5})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j+6},s_{i,j+7},s_{i,j+8})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Poner los bytes de las posiciones 3k (empezando de 0) en los primeros 5
+ lugares
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $pshufb\, xmm0,\, xmm3$
+\end_inset
+
+ con XMM3 apropiado
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j},s_{i,j+1},s_{i,j+2})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j+3},s_{i,j+4},s_{i,j+5})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $max(s{}_{i,j+6},s_{i,j+7},s_{i,j+8})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+...
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Escribir los primeros 5 bytes en la imágen destino apuntada por 
+\begin_inset Formula $dst$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $movd\, edx,\, xmm0$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $mov\,[dst],\, edx$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $psrldq\, xmm0,\,4$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $movd\, edx,\, xmm0$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $mov\,[dst+4],\, dl$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+De esta forma, se puede ver que el valor calculado en las primeros 5 elementos
+ de XMM0 se corresponde con el valor de aplicar la función a los pixeles
+ 
+\begin_inset Formula $s{}_{i,j}$
+\end_inset
+
+ y los 4 siguientes.
 \end_layout
 
 \end_body
