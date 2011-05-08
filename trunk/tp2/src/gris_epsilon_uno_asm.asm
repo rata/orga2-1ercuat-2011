@@ -63,11 +63,9 @@ gris_epsilon_uno_asm:
 				paddw xmm0, xmm2
 
 				; divido por 4 cada numero
-				; XXX: esta bien shiftear asi ?
 				psrlw xmm0, 2
 
 				; En en primer y cuarto elemento tengo las dos words que quiero
-				; XXX: estoy agarrando lo que quiero asi ?
 				pshuflw  xmm0, xmm0, 0x30
 
 				; empaqueto los enteros a 8 bits
@@ -75,11 +73,9 @@ gris_epsilon_uno_asm:
 				
 				; bajo los 32 bits mas bajos
 				movd edx, xmm0
-				; escribo los 16 bits aun mas bajos, los que quiero (?)
+				; escribo los 16 bits aun mas bajos, los que quiero
 				mov [edi], dx
-				;movd [edi], xmm0
 
-				
 				; Me faltan 2 elementos de esta fila menos
 				; Es decir, 2*3 = 6 pixeles de la imagen src (por ser color)
 				; Y 2 de la imagen destino (por ser BN)
