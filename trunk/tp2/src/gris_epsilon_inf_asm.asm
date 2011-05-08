@@ -86,8 +86,15 @@ gris_epsilon_inf_asm:
 				jmp .loop_w
 			
 			.loop_w_last_iter:
+
+				; Quedaban ecx filas. Ahora voy a procesar los
+				; ultimos 15 bytes y debo ajustar edi tambien (porque quizas ya habia calculado
+				; alguno de estos 15bytes y los voy a recalcular, por lo que debo pisarlo)
+				mov edx, 5
+				sub edx, ecx
+				sub edi, edx
+
 				; Cargo los ultimos 16 bytes
-				push ecx
 				lea ecx, [ecx * 3]
 				mov edx, 16
 				sub edx, ecx
@@ -96,12 +103,6 @@ gris_epsilon_inf_asm:
 
 				; Dejo esi apuntando al siguiente porque el primer byte lo voy a descartar 
 				add esi, 1
-
-				; Quedaban ecx filas. Ahora, al moverme para atras, debo ajustar edi tambien
-				pop ecx
-				mov edx, 5
-				sub edx, ecx
-				sub edi, edx
 
 				; Tiro el primero (me interesan los ultimos 15)
 				psrldq xmm6, 1
