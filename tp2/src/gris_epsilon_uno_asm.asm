@@ -26,13 +26,12 @@ gris_epsilon_uno_asm:
 		je .fin
 		
 		.loop_w:
+			cmp ecx, 0
+			je .loop_w_fin
+
 			cmp ecx, 2
 			jg .cargo_elementos
-			je .loop_w_last_iter
-			
-			; Si me quedan menos de dos, como avanzo de a 2, me
-			; quedan 0. Asique termine con esta fila
-			jl .loop_w_fin
+			jle .loop_w_last_iter
 		
 			.cargo_elementos:
 				;cargo 8 elementos
@@ -90,15 +89,28 @@ gris_epsilon_uno_asm:
 				jmp .loop_w
 			
 			.loop_w_last_iter:
-				; Me quedan 2 pixeles de la imagen original (6 bytes).
-				; Asique me paro 2bytes mas atras (asi me quedan 8 bytes), los cargo, 
-				; los shifteo (asi me quedo con los ultimos 6, que son los que
+				; Me quedan 1 o 2 pixeles de la imagen original (3/6 bytes).
+				; Asique me paro n bytes mas atras (tantos como haga falta para que me quedan
+				; 8 bytes), los cargo, los shifteo (asi me quedo con los ultimos 6, que son los que
 				; quiero procesar) y los proceso como siempre
 
+				; acomodo edi. Si ecx es 1, entonces voy a re-procesar los ultimos 6, por lo que debo apuntar
+				; edi a uno menos. Si no es uno, por el contexto de llamado es 2, y no hace falta modificarlo
+				cmp ecx, 1
+				jne .last_iter_jump_edi
+				dec edi
+				.last_iter_jump_edi:
 
-				; Cargo los ultimos 8 bytes y dejo esi como estaba
-				sub esi, 2
+				; Cargo los ultimos 8 bytes
+				lea ecx, [ecx * 3]
+				mov edx, 8
+				sub edx, ecx
+				sub esi, edx
 				movq xmm6, [esi]
+
+				; esi apunta a los ultimos 8. Pero hago que
+				; apunte a los ultimos 6, ya que los primeros dos los voy a descartar asi proceso los
+				; ultimos 6 que son los que me faltan procesar
 				add esi, 2
 
 				; los pongo como entero de 16 bits
@@ -107,6 +119,9 @@ gris_epsilon_uno_asm:
 			
 				; Tiro los primeros dos (me interesan los ultimos 6)
 				psrldq xmm6, 4
+
+				; Faltan procesar 2 filas (los ultimos 6 bytes)
+				mov ecx, 2
 
 				; dejo en xmm6 (como asume .stuff) los bytes a procesar
 				jmp .stuff
