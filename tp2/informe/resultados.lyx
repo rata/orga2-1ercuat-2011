@@ -1,0 +1,375 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Resultados
+\end_layout
+
+\begin_layout Standard
+Para comparar las implementaciones en ASM y en C se usó la cantidad de ciclos
+ de clock que consume cada una.
+ Pero como no se cuenta con una forma precisa de saber esto, ya que realmente
+ lo que se calcula es los ciclos de clock que transcurrieron desde que se
+ inició la función hasta que terminó (contando también los ciclos que el
+ sistema operativo le puede haber dado a otro proceso), se decidió correr
+ las pruebas con la computadora mayormente en idle y varias veces cada una,
+ utilizando como valor final el promedo de éstas.
+\end_layout
+
+\begin_layout Standard
+Los gráficos a continuación muestran la cantidad de ciclos insumidos por
+ cada implementación en función del tamño de la imágen.
+ Como imágenes de entrada se decidió usar la imágen edificio provista por
+ la cátedra en resoluciones cuadradas.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../src/plot/roberts.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparativa C vs ASM, filtro de Roberts
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../src/plot/prewitt.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparativa C vs ASM, filtro de Prewitt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../src/plot/sobel.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparativa C vs ASM, filtro de Sobel
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../src/plot/freichen.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparativa C vs ASM, filtro de Frei-Chen
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../src/plot/grises_uno.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparativa C vs ASM, epsilon uno
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/rodrigo/src/facu/orga2/orga2-1ercuat-2011/tp2/src/plot/grises_infinito.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparativa C vs ASM, epsilon infinito
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En todos los gráficos se puede ver la notable diferencia entre las implementacio
+nes de C y ASM.
+ En particular, cuanto más grande es el tamaño de la imágen, más notoria
+ es esta diferencia.
+ De hecho, la diferencia es tal que en todos los filtros insume una cantidad
+ de ciclos similar aplicarlo sobre una imágen de más de 3000 x 3000 en ASM
+ que aplicarlo en una de 1000x1000 en C.
+ Sin embargo, esto no ocurre con la conversión a escala de grises con 
+\begin_inset Formula $\epsilon=1$
+\end_inset
+
+: si bien lleva una cantidad no despreciable de ciclos menos procesar una
+ imágen de 3000x3000 en ASM que en C, ésta no es comparable con la cantidad
+ de ciclos que lleva procesar una de 1000x1000 en C.
+ Esto, creemos, se debe a que esa función de ASM genera solo dos pixeles
+ de la imágen destino en cada iteración.
+ En cambio, los filtros, generan al menos 6 pixeles de la imágen destino
+ en cada iteración.
+\end_layout
+
+\begin_layout Standard
+La función que menos pixeles de la imágen destino genera en una iteración
+ es la función de conversión a escala de grises con 
+\begin_inset Formula $\epsilon=1$
+\end_inset
+
+, que genera 2 pixeles por iteración.
+ Sin embargo, es notable la diferencia en la cantidad de ciclos de clock
+ con su implementación en C, que genera un pixel de la imágen destino en
+ cada iteración.
+ Nosotros dudábamos si en este caso se iba a producir una diferencia tan
+ notable, pero evidentemente sí.
+\end_layout
+
+\begin_layout Standard
+También se notó que en el caso del filtro de Frei-Chen utilizando la implementac
+ión de ASM se llegó a consumir hasta 10 veces menos en cantidad de ciclos
+ de clock.
+\end_layout
+
+\begin_layout Section*
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+El uso de las instrucciones SSE realmente provee una forma de mejorar varias
+ veces la performance de un algoritmo, y reduciendo hasta 10 veces la cantidad
+ de ciclos de clock según nuestros ejemplos.
+ Esta diferencia es tan grande que creemos que debe haber aplicaciones en
+ las cuales, si no se las utiliza, algunos tamaños de entrada resultarían
+ intratables.
+\end_layout
+
+\begin_layout Standard
+Sin embargo, implementar los algoritmos en C nos llevó en el orden de horas
+ e implementarlos en ASM en el orden de días.
+ Las implementaciones de algoritmos tan triviales en C pueden ser bastante
+ complicadas en ASM usando las extensiones SSE del procesador.
+ La implementación en ASM es bastante delicada, ya que es muy de bajo nivel
+ y cualquier error/omisión puede ser difícil de debugguear.
+ El recorrido de la matriz, cómo procesar los elementos en paralelo, cómo
+ leer/escribir los bytes en memoria, etc.
+ son preguntas que para implementar en C uno casi no necesita hacerse, porque
+ son muy directas.
+ En cambio, en ASM, hay que tomarse un tiempo para responder todas esas
+ preguntas, pensando bien la respuesta.
+ Esto hace que implementarlas en ASM sea bastante más complejo y propenso
+ a errores.
+\end_layout
+
+\begin_layout Standard
+Es decir, si bien implementando en ASM usando instrucciones SIMD se puede
+ aumentar notablemente la performance comparado con una implementación en
+ C, esto tiene un costo: mayor complejidad del código y es más propenso
+ a errores.
+ Nos parece razonable entonces el uso de ASM para optimizar ciertas funciones
+ de una aplicación, si previamente se hizo un análisis de performance, se
+ las encontró como cuello de botella y no se pudo mejorar su performance
+ en C.
+\end_layout
+
+\end_body
+\end_document
