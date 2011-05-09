@@ -1,0 +1,49 @@
+set terminal png enhanced size 1024,768
+
+set output "plot/roberts.png"
+set title "Filtro de Roberts"
+set autoscale # scale axes automatically
+set xlabel "Tamaño de la imagen (cuadrada)"
+set ylabel "Cantidad de ciclos promedio en 100 iteraciones"
+plot 'out/filtro-r-en-c.data' using 1:2 title "En C", \
+       'out/filtro-r-en-asm.data' title "En ASM"
+
+set output "plot/sobel.png"
+set title "Filtro de Sobel"
+set autoscale # scale axes automatically
+set xlabel "Tamaño de la imagen (cuadrada)"
+set ylabel "Cantidad de ciclos promedio en 100 iteraciones"
+plot 'out/filtro-s-en-c.data' using 1:2 title "En C", \
+       'out/filtro-s-en-asm.data' title "En ASM"
+
+set output "plot/prewitt.png"
+set title "Filtro de Prewitt"
+set autoscale # scale axes automatically
+set xlabel "Tamaño de la imagen (cuadrada)"
+set ylabel "Cantidad de ciclos promedio en 100 iteraciones"
+plot 'out/filtro-p-en-c.data' using 1:2 title "En C", \
+       'out/filtro-p-en-asm.data' title "En ASM"
+
+set output "plot/freichen.png"
+set title "Filtro de Freichen"
+set autoscale # scale axes automatically
+set xlabel "Tamaño de la imagen (cuadrada)"
+set ylabel "Cantidad de ciclos promedio en 100 iteraciones"
+plot 'out/filtro-f-en-c.data' using 1:2 title "En C", \
+       'out/filtro-f-en-asm.data' title "En ASM"
+
+set output "plot/grises_infinito.png"
+set title "Escala de grises epsilon infinito"
+set autoscale # scale axes automatically
+set xlabel "Tamaño de la imagen (cuadrada)"
+set ylabel "Cantidad de ciclos promedio en 100 iteraciones"
+plot 'out/gris-infinito-en-c.data' using 1:2 title "En C", \
+       'out/gris-infinito-en-asm.data' title "En ASM"
+
+set output "plot/grises_uno.png"
+set title "Escala de grises epsilon 1"
+set autoscale # scale axes automatically
+set xlabel "Tamaño de la imagen (cuadrada)"
+set ylabel "Cantidad de ciclos promedio en 100 iteraciones"
+plot 'out/gris-uno-en-c.data' using 1:2 title "En C", \
+       'out/gris-uno-en-asm.data' title "En ASM"
