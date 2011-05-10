@@ -4067,7 +4067,8 @@ Hacemos dos copias ya que en un registro no entra (
 
 \begin_layout Enumerate
 Extendemos con 0s la parte baja de la segunda fila en XMM1 y la parte alta
- en XMM2 ya que son numeros positivos:
+ en XMM2 ya que son numeros positivos, ahora son 4 enteros de 32 bits en
+ cada uno:
 \begin_inset Newline newline
 \end_inset
 
@@ -4295,7 +4296,7 @@ Cargamos en XMM0 el valor 2 en forma entera de 32bits empaquetada
 \begin_layout Enumerate
 Convertimos a float los 3 registros, dos donde esta la segunda fila y uno
  con 
-\begin_inset Formula $\sqrt{2}$
+\begin_inset Formula $2$
 \end_inset
 
  empaquetado.
