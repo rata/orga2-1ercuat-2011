@@ -9101,5 +9101,15 @@ De esta forma, se puede ver que el valor calculado en las primeros 5 elementos
  y los 4 siguientes.
 \end_layout
 
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "resultados.lyx"
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
