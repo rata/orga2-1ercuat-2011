@@ -2909,7 +2909,7 @@ Filtro de Frei-Chen
 \end_layout
 
 \begin_layout Standard
-Las máscaras para son:
+Las máscaras usadas son:
 \end_layout
 
 \begin_layout Standard
@@ -8243,8 +8243,8 @@ Escribo el primer y cuarto byte en la imágen destino
 
 \begin_layout Standard
 De esta forma, se puede ver que el valor calculado en el primer y cuarto
- byte elemento de XMM0 se corresponde con el valor de aplicar la función
- a los pixeles 
+ elemento de XMM0 se corresponde con el valor de aplicar la función a los
+ pixeles 
 \begin_inset Formula $src_{i,j}$
 \end_inset
 
