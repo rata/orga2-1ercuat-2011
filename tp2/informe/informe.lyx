@@ -8194,89 +8194,6 @@ Suma empaquetada de a words de XMM0 y XMM2
 \end_layout
 
 \begin_layout Enumerate
-Pongo el cuarto elemento como segundo y mantengo el primero en el primer
- lugar
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Formula $pshuflw\, xmm0,\, xmm0,\,0x30$
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="1" columns="5">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $src_{i,j}+2src_{i,j+1}+src_{i,j+2}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $src_{i,j+3}+2src_{i,j+4}+src_{i,j+5}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-...
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-...
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-...
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
 Empaqueto XMM0 como enteros de 8 bits sin signo
 \begin_inset Newline newline
 \end_inset
@@ -8289,7 +8206,7 @@ Empaqueto XMM0 como enteros de 8 bits sin signo
 \end_layout
 
 \begin_layout Enumerate
-Escribo los primeros 16 bytes de XMM0 en la imágen destino
+Escribo el primer y cuarto byte en la imágen destino
 \begin_inset Newline newline
 \end_inset
 
@@ -8302,16 +8219,32 @@ Escribo los primeros 16 bytes de XMM0 en la imágen destino
 \end_inset
 
 
-\begin_inset Formula $mov\,[dst],\, dx$
+\begin_inset Formula $mov\,[dst],\, dl$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $shr\, edx,\,24$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $mov\,[dst+1],\, dl$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-De esta forma, se puede ver que el valor calculado en las primeros dos elementos
- de XMM0 se corresponde con el valor de aplicar la función a los pixeles
- 
+De esta forma, se puede ver que el valor calculado en el primer y cuarto
+ byte elemento de XMM0 se corresponde con el valor de aplicar la función
+ a los pixeles 
 \begin_inset Formula $src_{i,j}$
 \end_inset
 
