@@ -65,16 +65,17 @@ gris_epsilon_uno_asm:
 				; divido por 4 cada numero
 				psrlw xmm0, 2
 
-				; En en primer y cuarto elemento tengo las dos words que quiero
-				pshuflw  xmm0, xmm0, 0x30
-
 				; empaqueto los enteros a 8 bits
 				packuswb xmm0, xmm0
 				
-				; bajo los 32 bits mas bajos
+				; Bajo los primeros 4 bytes. Pero solo quiero escribir el primero y el cuarto
 				movd edx, xmm0
-				; escribo los 16 bits aun mas bajos, los que quiero
-				mov [edi], dx
+				; Escribo el primer byte
+				mov [edi], dl
+				; Pongo el cuarto como primer byte
+				shr edx, 24
+				; Escribo el cuarto byte
+				mov [edi+1], dl
 
 				; Me faltan 2 elementos de esta fila menos
 				; Es decir, 2*3 = 6 pixeles de la imagen src (por ser color)
