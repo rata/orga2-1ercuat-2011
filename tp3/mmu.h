@@ -1,0 +1,8 @@
+#ifndef __MMU_H__
+#define __MMU_H__
+
+#define INICIO_PAGINAS_KERNEL 	0x00100000
+#define INICIO_PAGINAS_USUARIO	0x00200000
+#define TAMANO_PAGINA 			0x1000
+
+#endif
