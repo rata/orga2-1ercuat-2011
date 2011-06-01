@@ -27,6 +27,9 @@ iniciando_len equ $ - iniciando
 pasando_proteg: db 'pasamo a modo protegido'
 pasando_proteg_len equ $ - pasando_proteg
 
+nombre_grupo: db 'Los Marrones'
+nombre_grupo_len equ $ - nombre_grupo
+
 
 bienvenida:
 		;IMPRIMIR_MODO_REAL iniciando, iniciando_len, 0x07, 0, 0
@@ -48,45 +51,98 @@ bienvenida:
 BITS 32
 modo_protegido:
 
-		mov ax, 0x20
-		mov ds, ax
-		mov es, ax
-		mov gs, ax
-		mov fs, ax
-		mov ss, ax
+	mov ax, 0x20	;video
+	mov es, ax 	
+	mov ax, 0x18	;datos
+	mov ds, ax 
+	mov gs, ax
+	mov fs, ax
+	mov ss, ax
 
-		mov 	cx, 80 * 25
-		mov 	ax, 0x0000
-		xor 	di, di	
-	
-		; pongo todo en negro
-ciclo_negro:	
+	; pongo todo en negro
+	mov 	cx, 80 * 25
+	mov 	ax, 0x0000
+	xor 	di, di
+
+	ciclo_negro:	
 		mov 	[es:di], ax
 		add 	di, 2
 		loop 	ciclo_negro
 
 		; pongo la primera en blanco
-		xor di, di
-		mov cx, 80 ; la primer fila tiene 80 columnas, 
-		mov ax, 0x7000
-primera_blanco:	
+		xor 	di, di
+		mov 	cx, 80 ; la primer fila tiene 80 columnas, 
+		mov 	ax, 0x7000
+	primera_blanco:	
 		mov	[es:di], ax
 		add 	di, 2
 		loop 	primera_blanco
 
 		; pongo la ultima en blanco
-		mov di, 3840; 3840 = 80*24*2
-		mov cx, 80 ; 80 columnas 
-		mov ax, 0x7000
-ultima_blanco:	
+		mov 	di, 3840; 3840 = 80*24*2
+		mov 	cx, 80 ; 80 columnas 
+		mov 	ax, 0x7000
+	ultima_blanco:	
 		mov	[es:di], ax
 		add 	di, 2
 		loop 	ultima_blanco
 
 
-		;Habilitar paginacion
+;Habilitar paginacion
 
-		;Inicializar el scheduler de tareas
+	inicializar_kernel_dir:
+
+		%define PD_ADDR		0x00100000
+		%define PT_ADDR		0x00101000
+		
+		;Creamos Page Directory
+
+		mov ecx, 1024
+		mov ebx, PD_ADDR
+		mov eax, 0x2
+		.pd:
+			mov dword [ebx+ecx*4], eax
+		loop .pd
+		mov dword [PD_ADDR], PT_ADDR+0x3
+		
+		;Creamos Page Table
+
+		mov ecx, 1024
+		mov ebx, PT_ADDR
+		mov edx, 0x1000 * 1023
+
+		.pt:
+			dec ecx
+			mov [ebx+ecx*4], edx
+			add dword [ebx+ecx*4], 0x00000003
+			sub edx, 0x1000
+		cmp ecx, 0
+		jne .pt
+		
+		;Habilito paginacion
+
+		mov eax, PD_ADDR
+		mov cr3, eax		
+		mov eax, cr0
+		or eax, 0x80000000
+		mov cr0, eax
+
+		xchg bx, bx
+
+		; Escribo el nopmbre del grupo
+		mov ecx, nombre_grupo_len
+		xor 	di, di
+		xor	si, si
+		.escribo:
+			mov byte al, [nombre_grupo+di]
+			mov byte [es:si], al
+			inc di
+			add si, 2
+			loop .escribo
+	
+
+
+;Inicializar el scheduler de tareas
 		
 		;Construir tareas
 
