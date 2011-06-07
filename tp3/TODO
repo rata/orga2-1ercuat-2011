@@ -1,0 +1,37 @@
+##################################
+Ejercicio 1: pasar a modo protegido
+Hecho
+Faltan preguntas
+
+##################################
+Ejercicio 2: preparar interrupciones
+nada
+
+##################################
+Ejercicio 3: habilitar paginacion
+Hecho
+Faltan preguntas
+
+##################################
+Ejercicio 4: manejo de paginas
+nada
+
+Pregunta 8:
+
+Pregunta 9:
+Si. Si en el directorio de tabla de paginas ponemos dos entradas que apunten a la misma tabla de pagina.
+
+Pregunta 10: ¿Que es el TLB (Translation Lookaside Buffer) y para que sirve?
+Es una memoria caché que tiene partes de la tabla de páginación. El objetivo es evitar ir a memoria al traducir direcciones lógicas a físicas.
+
+##################################
+Ejercicio 5: handler de interrupciones
+nada
+
+##################################
+Ejercicio 6: Tareas
+nada
+
+##################################
+Ejercicio 7: un poco de todo
+nada
