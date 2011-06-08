@@ -50,7 +50,7 @@ gdt_entry gdt[GDT_COUNT] = {
 		(unsigned char)  0x1,      //s:1;
 		(unsigned char)  0x00,      //dpl:2;
 		(unsigned char)  0x1,      //p:1;
-		(unsigned char)  0xF,      //limit_16_19:4;
+		(unsigned char)  0x0,      //limit_16_19:4;
 		(unsigned char)  0x0,      //avl:1;
 		(unsigned char)  0x0,      //l:1;
 		(unsigned char)  0x1,      //db:1;
