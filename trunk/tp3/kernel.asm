@@ -127,8 +127,6 @@ modo_protegido:
 		or eax, 0x80000000
 		mov cr0, eax
 
-		xchg bx, bx
-
 		; Escribo el nopmbre del grupo
 		mov ecx, nombre_grupo_len
 		xor 	di, di
@@ -140,6 +138,18 @@ modo_protegido:
 			add si, 2
 			loop .escribo
 	
+
+		; Armo la idt
+		call inicializar_idt
+		lidt [IDT_DESC]
+	;	xchg bx, bx
+	
+		; genero un #GP
+		mov ecx, 4001
+		mov byte al, [nombre_grupo]
+		mov byte [es:ecx], al
+		;int 13
+		
 
 
 ;Inicializar el scheduler de tareas
