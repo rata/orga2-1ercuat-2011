@@ -225,16 +225,19 @@ print_registers:
 	
 
 	; imprimo el backtrace
-	;mov eax, [ebp + 4]
-	;DWORD_TO_HEX eax, treg
-	;IMPRIMIR_TEXTO treg, 8, 0x1A, 12, 0x22
-	;mov eax, [eax]
-	;mov eax, [ebp + 4]
-	;DWORD_TO_HEX eax, treg
-	;IMPRIMIR_TEXTO treg, 8, 0x1A, 12, 0x22
-
+	mov eax, [ebp + 4]
+	DWORD_TO_HEX eax, treg
+	IMPRIMIR_TEXTO treg, 8, 0x1A, 12, 0x22
+	mov ebp, [ebp]
+	;mov esp, ebp
+	;pop ebp
+	cmp ebp, 0x1C000
+	je .fin
+	mov eax, [ebp + 4]
+	DWORD_TO_HEX eax, treg
+	IMPRIMIR_TEXTO treg, 8, 0x1A, 13, 0x22
+	.fin:
 	jmp $
-
 
 _isr0:
 	mov edx, int_0
