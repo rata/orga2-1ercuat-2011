@@ -1,18 +1,30 @@
 ##################################
+
 Ejercicio 1: pasar a modo protegido
 Hecho
-Faltan preguntas
+
+Pregunta 1:
+Da error de General Protection. Tira este error porque estámos tratando de acceder con un segmento fuera de su limite.
+
 
 ##################################
+
 Ejercicio 2: preparar interrupciones
-nada
+Falta imprimir backtrace, pregunta 3 y 4
+
+Pregunta 2:
+ -Haciendo una division por 0 (int 0)
+ -Escribiendo con el segmento de video en un offset superior al limite (int 13)
+ -Escribiendo en el codigo un Opcode invalido (ej: db 'r') (int 6)
 
 ##################################
+
 Ejercicio 3: habilitar paginacion
 Hecho
 Faltan preguntas
 
 ##################################
+
 Ejercicio 4: manejo de paginas
 nada
 
@@ -25,13 +37,16 @@ Pregunta 10: ¿Que es el TLB (Translation Lookaside Buffer) y para que sirve?
 Es una memoria caché que tiene partes de la tabla de páginación. El objetivo es evitar ir a memoria al traducir direcciones lógicas a físicas.
 
 ##################################
+
 Ejercicio 5: handler de interrupciones
 nada
 
 ##################################
+
 Ejercicio 6: Tareas
 nada
 
 ##################################
+
 Ejercicio 7: un poco de todo
 nada
