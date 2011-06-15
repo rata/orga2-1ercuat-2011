@@ -145,10 +145,10 @@ modo_protegido:
 	;	xchg bx, bx
 	
 		; genero un #GP
-		mov ecx, 4001
-		mov byte al, [nombre_grupo]
-		mov byte [es:ecx], al
-		;int 13
+		;mov ecx, 4001
+		;mov byte al, [nombre_grupo]
+		;mov byte [es:ecx], al
+		int 13
 		
 
 
