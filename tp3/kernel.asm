@@ -142,7 +142,7 @@ modo_protegido:
 		; Armo la idt
 		call inicializar_idt
 		lidt [IDT_DESC]
-	;	xchg bx, bx
+		;xchg bx, bx
 	
 		; genero un #GP
 		;mov ecx, 4001

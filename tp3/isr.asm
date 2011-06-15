@@ -26,59 +26,78 @@ global _isr19
 
 
 section .rodata
-test_0: db '0!'
-test_1: db '1!'
-test_2: db '2!'
-test_3: db '3!'
-test_4: db '4!'
-test_5: db '5!'
-test_6: db '6!'
-test_7: db '7!'
-test_8: db '8!'
-test_9: db '9!'
-test_10: db '10!'
-test_11: db '11!'
-test_12: db '12!'
-test_13: db '13!'
-test_14: db '14!'
-test_15: db '15!'
-test_16: db '16!'
-test_17: db '17!'
-test_18: db '18!'
-test_19: db '19!'
+
+	int_0: db 'Divide error #0'
+	int_0_len equ $ - int_0
+	int_1: db 'RESERVED MFcker #1'
+	int_1_len equ $ - int_1
+	int_2: db 'MNI Interrupt #2'
+	int_2_len equ $ - int_2
+	int_3: db 'Breakpoint #3'
+	int_3_len equ $ - int_3
+	int_4: db 'Overflow #4'
+	int_4_len equ $ - int_4
+	int_5: db 'BOUND Range Exceeded #5'
+	int_5_len equ $ - int_5
+	int_6: db 'Invalid Opcode #6'
+	int_6_len equ $ - int_6
+	int_7: db 'Device Not Available #7'
+	int_7_len equ $ - int_7
+	int_8: db 'Double Fault #8'
+	int_8_len equ $ - int_8
+	int_9: db 'Coprocessor Segment Overrun (reserved) #9'
+	int_9_len equ $ - int_9
+	int_10: db 'Invalid TSS (maneja bien las tareas, Daniel san) #10'
+	int_10_len equ $ - int_10
+	int_11: db 'Segment Not Present (donde te metiste?) #11'
+	int_11_len equ $ - int_11
+	int_12: db 'Stack-Segment fault #12'
+	int_12_len equ $ - int_12
+	int_13: db 'General Protection #13'
+	int_13_len equ $ - int_13
+	int_14: db 'Page Fault #14'
+	int_14_len equ $ - int_14
+	int_15: db '15 - reserved #15'
+	int_15_len equ $ - int_15
+	int_16: db 'x87 FPU Floating-Point error (math error) #16'
+	int_16_len equ $ - int_16
+	int_17: db 'Alignment Check (17) #17'
+	int_17_len equ $ - int_17
+	int_18: db 'Machine Check #18'
+	int_18_len equ $ - int_18
+	int_19: db 'SIMD Floating-Point Exception #19'
+	int_19_len equ $ - int_19
 
 
-
-; voy a pasar cada registro a imprimir aca
-treg: dq 0x00
-teax: db 'EAX: '
-tebx: db 'EBX: '
-tecx: db 'ECX: '
-tedx: db 'EDX: '
-tesi: db 'ESI: '
-tedi: db 'EDI: '
-tebp: db 'EBP: '
-tesp: db 'ESP: '
-tcr0: db 'CR0: '
-tcr2: db 'CR2: '
-tcr3: db 'CR3: '
-tcr4: db 'CR4: '
-teflags: db 'EFLAGS: '
-tcs: db 'CS: '
-tds: db 'DS: '
-tes: db 'ES: '
-tfs: db 'FS: '
-tgs: db 'GS: '
-tss: db 'SS: '
-tstack: db 'stack'
-tbtrace: db 'backtrace'
+	; voy a pasar cada registro a imprimir aca
+	treg: dq 0x00
+	teax: db 'EAX: '
+	tebx: db 'EBX: '
+	tecx: db 'ECX: '
+	tedx: db 'EDX: '
+	tesi: db 'ESI: '
+	tedi: db 'EDI: '
+	tebp: db 'EBP: '
+	tesp: db 'ESP: '
+	tcr0: db 'CR0: '
+	tcr2: db 'CR2: '
+	tcr3: db 'CR3: '
+	tcr4: db 'CR4: '
+	teflags: db 'EFLAGS: '
+	tcs: db 'CS: '
+	tds: db 'DS: '
+	tes: db 'ES: '
+	tfs: db 'FS: '
+	tgs: db 'GS: '
+	tss: db 'SS: '
+	tstack: db 'stack'
+	tbtrace: db 'backtrace'
 
 
 section .text
 
-; imprime todos los registos
+
 print_registers:
-	; ojo con el eflags
 
 	; imprimo EFLAGS
 	push eax
@@ -216,113 +235,93 @@ print_registers:
 
 	jmp $
 
-_isr13:		
-		mov edx, test_13
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 13, 73
-		
-		jmp print_registers
 
 _isr0:
-
-ret
-
+	mov edx, int_0
+	IMPRIMIR_TEXTO edx, int_0_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr1:		
-		mov edx, test_1
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 1, 73
-		
-		; nos colgamos
-		jmp $
+	mov edx, int_1
+	IMPRIMIR_TEXTO edx, int_1_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr2:
-		mov edx, test_2
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 2, 73
-		
-
-		; nos colgamos
-		jmp $
+	mov edx, int_2
+	IMPRIMIR_TEXTO edx, int_2_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr3:
-		mov edx, test_3
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 3, 73
-		
-		; nos colgamos
-		jmp $
+	mov edx, int_3
+	IMPRIMIR_TEXTO edx, int_3_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr4:
-		mov edx, test_4
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 4, 73
-
-		; nos colgamos
-		jmp $
+	mov edx, int_4
+	IMPRIMIR_TEXTO edx, int_4_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr5:
-		mov edx, test_5
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 5, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_5
+	IMPRIMIR_TEXTO edx, int_5_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr6:
-		mov edx, test_6
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 6, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_6
+	IMPRIMIR_TEXTO edx, int_6_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr7:
-		mov edx, test_7
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 7, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_7
+	IMPRIMIR_TEXTO edx, int_7_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr8:
-		mov edx, test_8
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 8, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_8
+	IMPRIMIR_TEXTO edx, int_8_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr9:
-		mov edx, test_9
-		IMPRIMIR_TEXTO edx, 2, 0x0A, 9, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_9
+	IMPRIMIR_TEXTO edx, int_9_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr10:
-		mov edx, test_10
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 10, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_10
+	IMPRIMIR_TEXTO edx, int_10_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr11:
-		mov edx, test_11
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 11, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_11
+	IMPRIMIR_TEXTO edx, int_11_len, 0x0A, 2, 0x1
+	jmp print_registers
 _isr12:
-		mov edx, test_12
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 12, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_12
+	IMPRIMIR_TEXTO edx, int_12_len, 0x0A, 2, 0x1	
+	jmp print_registers
+_isr13:		
+	mov edx, int_13
+	IMPRIMIR_TEXTO edx, int_13_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr14:
-		mov edx, test_14
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 14, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_14
+	IMPRIMIR_TEXTO edx, int_14_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr15:
-		mov edx, test_15
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 15, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_15
+	IMPRIMIR_TEXTO edx, int_15_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr16:
-		mov edx, test_16
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 16, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_16
+	IMPRIMIR_TEXTO edx, int_16_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr17:
-		mov edx, test_17
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 17, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_17
+	IMPRIMIR_TEXTO edx, int_17_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr18:
-		mov edx, test_18
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 18, 73
-		; nos colgamos
-		jmp $
+	mov edx, int_18
+	IMPRIMIR_TEXTO edx, int_18_len, 0x0A, 2, 0x1	
+	jmp print_registers
 _isr19:
-		mov edx, test_19
-		IMPRIMIR_TEXTO edx, 3, 0x0A, 19, 73
-		; nos colgamos
-		jmp $
-
-
+	mov edx, int_19
+	IMPRIMIR_TEXTO edx, int_19_len, 0x0A, 2, 0x1	
+	jmp print_registers
+_isr66:
+	jmp $
+_isr88:
+	jmp $
+_isr89:
+	jmp $
 
 proximo_reloj:
 	pushad
