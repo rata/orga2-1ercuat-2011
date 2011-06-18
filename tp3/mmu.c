@@ -20,7 +20,7 @@ void inicializar_mmu(void)
 unsigned int *pagina_libre_usuario(void)
 {
 	unsigned int *ret = u_free_page;
-	u_free_page += 0x1000;
+	u_free_page += TAMANO_PAGINA;
 
 	return ret;
 }
@@ -28,7 +28,7 @@ unsigned int *pagina_libre_usuario(void)
 unsigned int *pagina_libre_kernel(void)
 {
 	unsigned int *ret = k_free_page;
-	k_free_page += 0x1000;
+	k_free_page += TAMANO_PAGINA;
 
 	return ret;
 }
@@ -69,6 +69,7 @@ void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica)
 	//unsigned int virt_off = virtual & 0x3FF;
 
 	// El PD es el cr3 con los ultimos 12 bits en 0
+	// XXX: pagina_libre_kernel/usuario ? kernel porque es para pt ?
 	unsigned int *pd = (unsigned int *) (cr3 & ~0xFFF);
 	if (pd[virt_dir] == 0x00)
 		pd[virt_dir] = (unsigned int) (pagina_libre_kernel()) | 3;
