@@ -98,21 +98,24 @@ section .rodata
 section .text
 
 
+; Asume que antes de jmp a esta funcion se hizo:
+; pushfd
+; push eax
+; Asi imprime los flags correctamente
 print_registers:
 
+	; imprimo EAX
+	pop eax
+	IMPRIMIR_TEXTO teax, 5, 0x1A, 4, 0x01
+	DWORD_TO_HEX eax, treg
+	IMPRIMIR_TEXTO treg, 8, 0x1A, 4, 0x06
+
 	; imprimo EFLAGS
-	push eax
-	pushf
 	pop eax;
 	IMPRIMIR_TEXTO teflags, 8, 0x1A, 18, 0x01
 	DWORD_TO_HEX eax, treg
 	IMPRIMIR_TEXTO treg, 8, 0x1A, 18, 0x09
-	pop eax
 
-	; imprimo EAX
-	IMPRIMIR_TEXTO teax, 5, 0x1A, 4, 0x01
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 4, 0x06
 	; imprimo CS
 	IMPRIMIR_TEXTO tcs, 4, 0x1A, 4, 0x16
 	DWORD_TO_HEX cs, treg
@@ -254,82 +257,122 @@ print_registers:
 	jmp $
 
 _isr0:
+	pushfd
+	push eax
 	mov edx, int_0
 	IMPRIMIR_TEXTO edx, int_0_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr1:		
+	pushfd
+	push eax
 	mov edx, int_1
 	IMPRIMIR_TEXTO edx, int_1_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr2:
+	pushfd
+	push eax
 	mov edx, int_2
 	IMPRIMIR_TEXTO edx, int_2_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr3:
+	pushfd
+	push eax
 	mov edx, int_3
 	IMPRIMIR_TEXTO edx, int_3_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr4:
+	pushfd
+	push eax
 	mov edx, int_4
 	IMPRIMIR_TEXTO edx, int_4_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr5:
+	pushfd
+	push eax
 	mov edx, int_5
 	IMPRIMIR_TEXTO edx, int_5_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr6:
+	pushfd
+	push eax
 	mov edx, int_6
 	IMPRIMIR_TEXTO edx, int_6_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr7:
+	pushfd
+	push eax
 	mov edx, int_7
 	IMPRIMIR_TEXTO edx, int_7_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr8:
+	pushfd
+	push eax
 	mov edx, int_8
 	IMPRIMIR_TEXTO edx, int_8_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr9:
+	pushfd
+	push eax
 	mov edx, int_9
 	IMPRIMIR_TEXTO edx, int_9_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr10:
+	pushfd
+	push eax
 	mov edx, int_10
 	IMPRIMIR_TEXTO edx, int_10_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr11:
+	pushfd
+	push eax
 	mov edx, int_11
 	IMPRIMIR_TEXTO edx, int_11_len, 0x0A, 2, 0x1
 	jmp print_registers
 _isr12:
+	pushfd
+	push eax
 	mov edx, int_12
 	IMPRIMIR_TEXTO edx, int_12_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr13:		
+	pushfd
+	push eax
 	mov edx, int_13
 	IMPRIMIR_TEXTO edx, int_13_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr14:
+	pushfd
+	push eax
 	mov edx, int_14
 	IMPRIMIR_TEXTO edx, int_14_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr15:
+	pushfd
+	push eax
 	mov edx, int_15
 	IMPRIMIR_TEXTO edx, int_15_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr16:
+	pushfd
+	push eax
 	mov edx, int_16
 	IMPRIMIR_TEXTO edx, int_16_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr17:
+	pushfd
+	push eax
 	mov edx, int_17
 	IMPRIMIR_TEXTO edx, int_17_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr18:
+	pushfd
+	push eax
 	mov edx, int_18
 	IMPRIMIR_TEXTO edx, int_18_len, 0x0A, 2, 0x1	
 	jmp print_registers
 _isr19:
+	pushfd
+	push eax
 	mov edx, int_19
 	IMPRIMIR_TEXTO edx, int_19_len, 0x0A, 2, 0x1	
 	jmp print_registers
