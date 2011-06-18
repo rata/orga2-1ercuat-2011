@@ -59,6 +59,11 @@ modo_protegido:
 	mov fs, ax
 	mov ss, ax
 
+	; seteamos la pila en una direccion lejana
+	; OJO este mismo numero lo usamos en isr.asm (user algun define ?)
+	mov ebp, 0x1C000
+	mov esp, 0x1C000
+
 	; pongo todo en negro
 	mov 	cx, 80 * 25
 	mov 	ax, 0x0000
@@ -148,7 +153,15 @@ modo_protegido:
 		;mov ecx, 4001
 		;mov byte al, [nombre_grupo]
 		;mov byte [es:ecx], al
-		int 13
+		;call test_1
+		;test_1:
+		;	push ebp
+		;	mov ebp, esp
+		;	call test_2
+		;test_2:
+		;	push ebp
+		;	mov ebp, esp
+		;int 12
 		
 
 
