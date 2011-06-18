@@ -14,6 +14,7 @@ extern inicializar_idt
 extern resetear_pic
 extern habilitar_pic
 
+extern inicializar_mmu, inicializar_dir_usuario
 
 ;Aca arranca todo, en el primer byte.
 start:
@@ -115,7 +116,6 @@ modo_protegido:
 		mov ecx, 1024
 		mov ebx, PT_ADDR
 		mov edx, 0x1000 * 1023
-
 		.pt:
 			dec ecx
 			mov [ebx+ecx*4], edx
@@ -163,6 +163,24 @@ modo_protegido:
 		;	mov ebp, esp
 		;int 12
 		
+
+; MMU
+		call inicializar_mmu
+		call inicializar_dir_usuario
+
+		; guardo el cr3 actual
+		mov ebx, cr3
+
+		; cambio el cr3
+		mov cr3, eax
+
+		; cambio el fondo del primer caracter
+		mov cl, [es:1]
+		and cl, 0xCF
+		mov [es:1], cl
+		
+		; vuelvo a la "normalidad"
+		mov cr3, ebx
 
 
 ;Inicializar el scheduler de tareas
