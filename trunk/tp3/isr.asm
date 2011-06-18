@@ -71,6 +71,7 @@ section .rodata
 
 	; voy a pasar cada registro a imprimir aca
 	treg: dq 0x00
+	; titulitos que voy a imprimir
 	teax: db 'EAX: '
 	tebx: db 'EBX: '
 	tecx: db 'ECX: '
@@ -90,7 +91,7 @@ section .rodata
 	tfs: db 'FS: '
 	tgs: db 'GS: '
 	tss: db 'SS: '
-	tstack: db 'stack'
+	tstrace: db 'stack'
 	tbtrace: db 'backtrace'
 
 
@@ -173,7 +174,7 @@ print_registers:
 	DWORD_TO_HEX esp, treg
 	IMPRIMIR_TEXTO treg, 8, 0x1A, 11, 0x06
 	; titulos stack y backtrace	
-	IMPRIMIR_TEXTO tstack, 5, 0x1A, 11, 0x16
+	IMPRIMIR_TEXTO tstrace, 5, 0x1A, 11, 0x16
 	IMPRIMIR_TEXTO tbtrace, 9, 0x1A, 11, 0x22
 
 	; imprimo CR0
@@ -204,39 +205,52 @@ print_registers:
 	;push dword 0x5
 	;push dword 0x6
 	
-	mov eax, [esp]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 12, 0x16
-	mov eax, [esp + 4]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 13, 0x16
-	mov eax, [esp + 8]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 14, 0x16
-	mov eax, [esp + 12]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 15, 0x16
-	mov eax, [esp + 16]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 16, 0x16
-	mov eax, [esp + 20]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 17, 0x16
-	
+	; fila a partir de la que empiezo a imprimr
+	mov ecx, 12
+	; iteracion
+	mov ebx, 0
+	.print_strace:
+		cmp esp, 0x1C000
+		je .strace_end
+		cmp ebx, 6
+		je .strace_end
 
+		mov eax, [esp + ebx * 4]
+		DWORD_TO_HEX eax, treg
+		IMPRIMIR_TEXTO treg, 8, 0x1A, ecx, 0x16
+
+		inc ebx
+		inc ecx
+		jmp .print_strace
+	.strace_end:
+
+
+	; fila a partir de la que empiezo a imprimr
+	mov ecx, 12
+	; iteracion
+	mov ebx, 0
 	; imprimo el backtrace
-	mov eax, [ebp + 4]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 12, 0x22
-	mov ebp, [ebp]
-	;mov esp, ebp
-	;pop ebp
-	cmp ebp, 0x1C000
-	je .fin
-	mov eax, [ebp + 4]
-	DWORD_TO_HEX eax, treg
-	IMPRIMIR_TEXTO treg, 8, 0x1A, 13, 0x22
-	.fin:
+	.print_btrace:
+		cmp ebp, 0x1C000
+		je .btrace_end
+		cmp ebx, 6
+		je .btrace_end
+
+		; en ebp + 4 esta el codigo de retorno, lo imprimo
+		mov eax, [ebp + 4]
+		DWORD_TO_HEX eax, treg
+		IMPRIMIR_TEXTO treg, 8, 0x1A, ecx, 0x22
+
+		; cargo el ebp anterior
+		mov esp, ebp
+		pop ebp
+
+		; incremento la fila a imprimir y el elemento por el que voy
+		inc ebx
+		inc ecx
+		jmp .print_btrace
+	.btrace_end:
+
 	jmp $
 
 _isr0:
