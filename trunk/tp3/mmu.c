@@ -98,6 +98,7 @@ void unmapear_pagina(unsigned int virtual, unsigned int cr3)
 	unsigned int *pd = (unsigned int *) (cr3 & ~0xFFF);
 	if (pd[virt_dir] == 0x00) {
 		//pd[virt_dir] = (unsigned int) (pagina_libre_kernel()) | 3;
+		// XXX: nunca estuvo mapeada, asique no hago nada ?
 		return;
 	}
 
