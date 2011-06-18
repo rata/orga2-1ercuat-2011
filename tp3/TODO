@@ -17,6 +17,11 @@ Pregunta 2:
  -Escribiendo con el segmento de video en un offset superior al limite (int 13)
  -Escribiendo en el codigo un Opcode invalido (ej: db 'r') (int 6)
 
+Pregunta 4:
+Sí, siempre que haya alguna forma de encontrar los codigos de retornos
+anteriores. En la convención C esto ocurre y por eso se puede hacer. Pero no es
+la unica convecion con la que se podría hacer.
+
 ##################################
 
 Ejercicio 3: habilitar paginacion
