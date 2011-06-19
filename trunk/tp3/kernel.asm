@@ -16,6 +16,9 @@ extern habilitar_pic
 extern deshabilitar_pic
 
 extern inicializar_mmu, inicializar_dir_usuario
+extern inicializar_gdt, entrada_libre_gdt, cargar_tarea_gdt
+extern obtener_entrada_tss, obtener_tss_idle, obtener_tss_inicial
+
 
 ;Aca arranca todo, en el primer byte.
 start:
@@ -189,13 +192,38 @@ modo_protegido:
 		call habilitar_pic
 
 		sti
-		
+
+		;testing de interrupciones		
 		;xor eax, eax
 		;int 66
 		;int 88
 		;int 89
 		;xchg bx, bx
+		
+; ejercicio 6
+		
+		call inicializar_gdt
 
+		; b)
+		call obtener_tss_inicial
+		push eax
+		call cargar_tarea_gdt
+		add esp, 4
+
+		; c) y d)
+		call obtener_tss_idle
+		push eax
+		call cargar_tarea_gdt
+		add esp, 4
+
+		; e) Pongo en el lrt de la tarea inicial
+		xchg bx, bx
+		mov ax, 0x28
+		ltr ax
+
+		;xchg bx, bx
+		; context switch a la tarea idle
+		jmp 0x30:0
 
 ;Inicializar el scheduler de tareas
 		

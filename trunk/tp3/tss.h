@@ -46,6 +46,9 @@ typedef struct str_tss {
 /** Tabla de TSSs **/
 extern tss tsss[];
 extern tss tarea_inicial;
+tss* obtener_tss_inicial();
+tss* obtener_tss_idle();
 tss* obtener_entrada_tss();
+
 #define TSS_COUNT 18
 #endif //__TSS_H__

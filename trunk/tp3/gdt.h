@@ -1,7 +1,7 @@
 #ifndef __GDT_H__
 #define __GDT_H__
 
-
+#include "tss.h"
 
 typedef struct str_gdt_descriptor {
 	unsigned short gdt_length;
@@ -28,6 +28,11 @@ typedef struct str_gdt_entry {
 /** Tabla GDT **/
 extern gdt_entry gdt[];
 extern gdt_descriptor GDT_DESC;
+
+void inicializar_gdt();
+gdt_entry *entrada_libre_gdt();
+void cargar_tarea_gdt(tss *tarea);
+
 
 #define GDT_COUNT 128
 #endif //__GDT_H__

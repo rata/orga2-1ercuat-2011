@@ -57,7 +57,46 @@ gdt_entry gdt[GDT_COUNT] = {
 		(unsigned char)  0x0,      //g:1;
 		(unsigned char)  0x00      //base_31_24;
 	}
-
+	
 };
 
 gdt_descriptor GDT_DESC = {sizeof(gdt)-1, (unsigned int)&gdt};
+
+static gdt_entry* next_entry;
+
+void inicializar_gdt()
+{
+	next_entry = (gdt + 5);
+}
+
+gdt_entry *entrada_libre_gdt()
+{
+	 gdt_entry* ret = next_entry;
+	 next_entry++;	 
+	 return ret;
+}
+
+void cargar_tarea_gdt(tss *tarea)
+{
+	gdt_entry* selector = entrada_libre_gdt();
+
+	/* Completo los datos "faciles" */
+	selector->limit_0_15 = 0x67;
+	selector->type = 0x9;
+	selector->s = 0x00;
+	selector->dpl = 0x00;
+	selector->p = 0x01;
+	selector->limit_16_19 = 0x00;
+	selector->avl = 0x00;
+	selector->l = 0x00;
+	selector->db = 0x00;
+	selector->g = 0x00;
+
+	/* Me arremango y pongo el base_addr */
+	selector->base_0_15 = (unsigned int) (tarea) & 0xFFFF;
+	selector->base_23_16 = ((unsigned int) (tarea) >> 16) & 0xFF;
+	selector->base_31_24 = (unsigned int) (tarea) >> 24;
+
+	return;	
+}
+
