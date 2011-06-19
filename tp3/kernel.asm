@@ -13,6 +13,7 @@ extern inicializar_idt
 
 extern resetear_pic
 extern habilitar_pic
+extern deshabilitar_pic
 
 extern inicializar_mmu, inicializar_dir_usuario
 
@@ -181,6 +182,19 @@ modo_protegido:
 		
 		; vuelvo a la "normalidad"
 		mov cr3, ebx
+
+; ejercicio 5
+		call deshabilitar_pic
+		call resetear_pic
+		call habilitar_pic
+
+		sti
+		
+		;xor eax, eax
+		;int 66
+		;int 88
+		;int 89
+		;xchg bx, bx
 
 
 ;Inicializar el scheduler de tareas

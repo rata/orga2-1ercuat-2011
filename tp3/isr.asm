@@ -23,6 +23,11 @@ global _isr16
 global _isr17
 global _isr18
 global _isr19
+global _isr32
+global _isr33
+global _isr66
+global _isr88
+global _isr89
 
 
 section .rodata
@@ -67,6 +72,28 @@ section .rodata
 	int_18_len equ $ - int_18
 	int_19: db 'SIMD Floating-Point Exception #19'
 	int_19_len equ $ - int_19
+	int_32: db 'Int #32'
+	int_32_len equ $ - int_32
+	int_33: db 'Int #33'
+	int_33_len equ $ - int_33
+	int_66: db 'Int #66'
+	int_66_len equ $ - int_66
+	int_88: db 'Int #88'
+	int_88_len equ $ - int_88
+	int_89: db 'Int #89'
+	int_89_len equ $ - int_89
+	
+	tecla_1: db '1'
+	tecla_2: db '2'
+	tecla_3: db '3'
+	tecla_4: db '4'
+	tecla_5: db '5'
+	tecla_6: db '6'
+	tecla_7: db '7'
+	tecla_8: db '8'
+	tecla_9: db '9'
+	tecla_0: db '0'
+	
 
 
 	; voy a pasar cada registro a imprimir aca
@@ -374,14 +401,88 @@ _isr19:
 	pushfd
 	push eax
 	mov edx, int_19
-	IMPRIMIR_TEXTO edx, int_19_len, 0x0A, 2, 0x1	
+	IMPRIMIR_TEXTO edx, int_19_len, 0x0A, 2, 0x1
 	jmp print_registers
+_isr32:
+	; protejo todos los registros por fin_intr_pic1
+	pushad
+	call fin_intr_pic1
+	call proximo_reloj
+	popad
+	iret
+
+_isr33:
+	pushad
+	call fin_intr_pic1
+
+	xor eax, eax
+	in al, 0x60
+	
+	cmp al, 0x02
+	je .print_1
+	cmp al, 0x03
+	je .print_2
+	cmp al, 0x04
+	je .print_3
+	cmp al, 0x05
+	je .print_4
+	cmp al, 0x06
+	je .print_5
+	cmp al, 0x07
+	je .print_6
+	cmp al, 0x08
+	je .print_7
+	cmp al, 0x09
+	je .print_8
+	cmp al, 0x0a
+	je .print_9
+	cmp al, 0x0b
+	je .print_0
+	jmp .end
+	
+	.print_1:
+		IMPRIMIR_TEXTO tecla_1, 1, 0x0A, 0, 79
+		jmp .end
+	.print_2:
+		IMPRIMIR_TEXTO tecla_2, 1, 0x0A, 0, 79
+		jmp .end
+	.print_3:
+		IMPRIMIR_TEXTO tecla_3, 1, 0x0A, 0, 79
+		jmp .end
+	.print_4:
+		IMPRIMIR_TEXTO tecla_4, 1, 0x0A, 0, 79
+		jmp .end
+	.print_5:
+		IMPRIMIR_TEXTO tecla_5, 1, 0x0A, 0, 79
+		jmp .end
+	.print_6:
+		IMPRIMIR_TEXTO tecla_6, 1, 0x0A, 0, 79
+		jmp .end
+	.print_7:
+		IMPRIMIR_TEXTO tecla_7, 1, 0x0A, 0, 79
+		jmp .end
+	.print_8:
+		IMPRIMIR_TEXTO tecla_8, 1, 0x0A, 0, 79
+		jmp .end
+	.print_9:
+		IMPRIMIR_TEXTO tecla_9, 1, 0x0A, 0, 79
+		jmp .end
+	.print_0:
+		IMPRIMIR_TEXTO tecla_0, 1, 0x0A, 0, 79
+		jmp .end
+	
+	.end:
+		popad
+		iret
 _isr66:
-	jmp $
+	mov eax, 666
+	iret
 _isr88:
-	jmp $
+	mov eax, 42
+	iret
 _isr89:
-	jmp $
+	mov eax, 'L'
+	iret
 
 proximo_reloj:
 	pushad
