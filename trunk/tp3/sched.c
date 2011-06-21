@@ -12,20 +12,61 @@ void *memcpy3(void *dest, const void *src, unsigned int n);
 
 unsigned short tareas[CANT_TAREAS];
 
+unsigned short idx_tarea_libre;
+
+unsigned short idx_tarea_actual;
+
+int dormida;
+
+// devuelve el offset de la gdt (selector que se usa en el jmp) de la proxima tarea a ejecutar
 unsigned short proximo_indice() {	
-	return 0;
+	idx_tarea_actual++;
+
+	// Si me pase de la ultima tarea, vuelvo a la primera
+	if (idx_tarea_actual > 3)
+		idx_tarea_actual = 0;
+
+	// Si esta dormida la de control (la 3) no la tengo que ejecutar. Vuelvo a la primera
+	if (idx_tarea_actual == 3 && dormida == 1)
+		idx_tarea_actual = 0;
+
+	return tareas[idx_tarea_actual];
+}
+
+unsigned short tarea_actual()
+{
+	return idx_tarea_actual;
+}
+
+void dormir_tarea_control()
+{
+	dormida = 1;
+}
+
+void despertar_tarea_control()
+{
+	dormida = 0;
 }
 
 void inicializar_sched()
 {
+	// Pedimos y llenamos de 0 la pagina compartida por todas las tareas
 	pag_shared = pagina_libre_usuario();
 	char *buf = (char *) pag_shared;
 	unsigned int i;
 	for (i = 0; i < TAMANO_PAGINA; i++) {
 		buf[i] = 0x00;
 	}
-}
 
+	// El primer elemento del arreglo esta libre
+	idx_tarea_libre = 0;
+
+	// La tarea actual es 0
+	idx_tarea_actual = 0;
+
+	// No hay ninguna tarea dormida
+	dormida = 0;
+}
 
 void *memcpy3(void *dest, const void *src, unsigned int n)
 {
@@ -41,9 +82,6 @@ void *memcpy3(void *dest, const void *src, unsigned int n)
 
 int	crear_proceso(unsigned int cargar_desde)
 {	
-//	cargar_tarea_gdt(obtener_tss_idle());
-//	return 0;
-	
 	//Obtener una pagina para el codigo y otra para la pila.
 	unsigned int pagina_codigo = pagina_libre_usuario();
 	pagina_codigo = pagina_codigo;
@@ -116,6 +154,12 @@ int	crear_proceso(unsigned int cargar_desde)
 	
 	//Obtener una entrada en la GDT e inicializarla con los datos del TSS correspondiente.
 	cargar_tarea_gdt(tarea);
+
+	// El selector en la gdt lo pongo a lo macho. Los primeros 7 ya estan
+	// usados. Y lo multiplico por 8 para que sea un selector valido (y no
+	// un indice "normal")
+	tareas[idx_tarea_libre] = (idx_tarea_libre + 7) * 8;
+	idx_tarea_libre++;
 
 	return 0;
 }
