@@ -2,43 +2,44 @@
 #include "i386.h"
 
 // "puntero" a la prox pag libre de kernel
-static unsigned int *k_free_page;
+static unsigned int k_free_page;
 
 // "puntero" a la prox pag libre de usuario
-static unsigned int *u_free_page;
+static unsigned int u_free_page;
 
 void inicializar_mmu(void)
 {
 	// Las primeras dos paginas estan ocupadas para PD y PT
-	k_free_page = (unsigned int *) INICIO_PAGINAS_KERNEL + 0x2000;
+	k_free_page = INICIO_PAGINAS_KERNEL + 0x2000;
 
-	u_free_page = (unsigned int *) INICIO_PAGINAS_USUARIO;
+	u_free_page = INICIO_PAGINAS_USUARIO;
 
 	return;
 }
 
-unsigned int *pagina_libre_usuario(void)
+unsigned int pagina_libre_usuario(void)
 {
-	unsigned int *ret = u_free_page;
+	unsigned int ret = u_free_page;
 	u_free_page += TAMANO_PAGINA;
 
 	return ret;
 }
 
-unsigned int *pagina_libre_kernel(void)
+unsigned int pagina_libre_kernel(void)
 {
-	unsigned int *ret = k_free_page;
+	unsigned int ret = k_free_page;
 	k_free_page += TAMANO_PAGINA;
 
 	return ret;
 }
 
-unsigned int *inicializar_dir_usuario(void)
+unsigned int inicializar_dir_usuario(void)
 {
+	//return 5;
 	// Mapeamos de la direccion 0 a la 0x200000 (no incluida) con identity mapping
 	// Eso implica 1 sola entrada en el PD
-	unsigned int *pd = pagina_libre_kernel();
-	unsigned int *pt = pagina_libre_kernel();
+	unsigned int *pd = (unsigned int *) pagina_libre_kernel();
+	unsigned int *pt = (unsigned int *) pagina_libre_kernel();
 
 	// Inicializamos la unica entrada del PD que necesitamos
 	// Le ponemos la direccion del pt pero con 3 como atributos
@@ -50,15 +51,23 @@ unsigned int *inicializar_dir_usuario(void)
 		pd[i] = 0;
 
 	// Inicializamos el PT con identity mapping. Asique va de la 0 fisica a la anterior a 0x200000
-	unsigned int fisica;
+	unsigned int fisica = 0;
 	for (fisica = 0, i = 0; fisica < 0x200000; fisica += TAMANO_PAGINA, i++)
 		pt[i] = fisica | 3;
+	//for (i = 0; i < 512; i++) {
+	//for (i = 0; i < 1023; i++) {
+	//	pt[i] = fisica | 3;
+	//	fisica += TAMANO_PAGINA;
+	//}
 
-	return pd;
+	//return 5;
+
+	return (unsigned int) pd;
 }
 
 void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica)
 {
+	//return;
 	/* Dada una direccion virtual se define el directorio, tabla y offset como
 	 * directorio: bytes 31 a 22
 	 * tabla: bytes 21 a 12
@@ -72,10 +81,11 @@ void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica)
 	// XXX: pagina_libre_kernel/usuario ? kernel porque es para pt ?
 	unsigned int *pd = (unsigned int *) (cr3 & ~0xFFF);
 	if (pd[virt_dir] == 0x00)
-		pd[virt_dir] = (unsigned int) (pagina_libre_kernel()) | 3;
+		pd[virt_dir] = pagina_libre_kernel() | 3;
 
 	/* Puntero a la base del page table */
-	unsigned int *pt_base = (unsigned int *) (pd[virt_dir] >> 12);
+	//unsigned int *pt_base = (unsigned int *) (pd[virt_dir] >> 12);
+	unsigned int *pt_base = (unsigned int *) (pd[virt_dir] & ~0xFFF);
 
 	/* La entrada que queremos es el offset virt_tab de pt_base (por la
 	 * aritmetica de punteros no hace falta multiplicar por 4, porque
@@ -103,7 +113,8 @@ void unmapear_pagina(unsigned int virtual, unsigned int cr3)
 	}
 
 	/* Puntero a la base del page table */
-	unsigned int *pt_base = (unsigned int *) (pd[virt_dir] >> 12);
+	//unsigned int *pt_base = (unsigned int *) (pd[virt_dir] >> 12);
+	unsigned int *pt_base = (unsigned int *) (pd[virt_dir] & ~0xFFF);
 
 	/* La entrada que queremos es el offset virt_tab de pt_base (por la
 	 * aritmetica de punteros no hace falta multiplicar por 4, porque

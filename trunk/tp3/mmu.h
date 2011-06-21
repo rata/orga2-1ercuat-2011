@@ -7,9 +7,9 @@
 
 
 void inicializar_mmu(void);
-unsigned int *pagina_libre_usuario(void);
-unsigned int *pagina_libre_kernel(void);
-unsigned int *inicializar_dir_usuario(void);
+unsigned int pagina_libre_usuario(void);
+unsigned int pagina_libre_kernel(void);
+unsigned int inicializar_dir_usuario(void);
 void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica);
 void unmapear_pagina(unsigned int virtual, unsigned int cr3);
 
