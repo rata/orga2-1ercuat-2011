@@ -7,6 +7,19 @@
 tss tsss[TSS_COUNT];
 tss tarea_inicial;
 tss tarea_idle;
+tss* tss_libre;
+
+void inicializar_tsss()
+{
+	tss_libre = tsss;
+}
+
+tss* obtener_entrada_tss()
+{
+	tss* actual = tss_libre;
+	tss_libre++;
+	return actual;
+}
 
 tss* obtener_tss_inicial()
 {
@@ -55,7 +68,7 @@ tss* obtener_tss_inicial()
 
 tss* obtener_tss_idle()
 {
-	unsigned int esp = (unsigned int) pagina_libre_usuario();
+	unsigned int esp = pagina_libre_usuario();
 
 	/* Apunto la pila al final de la pagina */
 	esp = esp + 4092;

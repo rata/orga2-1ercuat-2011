@@ -48,6 +48,7 @@ extern tss tsss[];
 extern tss tarea_inicial;
 tss* obtener_tss_inicial();
 tss* obtener_tss_idle();
+void inicializar_tsss();
 tss* obtener_entrada_tss();
 
 #define TSS_COUNT 18
