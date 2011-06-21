@@ -162,8 +162,8 @@ print_registers:
 	DWORD_TO_HEX ecx, treg
 	IMPRIMIR_TEXTO treg, 8, 0x1A, 6, 0x06
 	; imprimo ES
-	IMPRIMIR_TEXTO tds, 4, 0x1A, 6, 0x16
-	DWORD_TO_HEX ds, treg
+	IMPRIMIR_TEXTO tes, 4, 0x1A, 6, 0x16
+	DWORD_TO_HEX es, treg
 	IMPRIMIR_TEXTO treg, 8, 0x1A, 6, 0x1A
 
 	; imprimo EDX
@@ -253,7 +253,6 @@ print_registers:
 		inc ecx
 		jmp .print_strace
 	.strace_end:
-
 
 	; fila a partir de la que empiezo a imprimr
 	mov ecx, 12
