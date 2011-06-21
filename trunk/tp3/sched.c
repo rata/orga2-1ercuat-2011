@@ -50,13 +50,18 @@ void despertar_tarea_control()
 
 void inicializar_sched()
 {
-	// Pedimos y llenamos de 0 la pagina compartida por todas las tareas
+	// Pedimos compartida por todas las tareas
 	pag_shared = pagina_libre_usuario();
-	char *buf = (char *) pag_shared;
+
+	// Mapeo temporal para acceder a la pagina y ponerla en 0
+	// El 0 NO se usa, asique piso lo que habia y no dejo nada
+	mapear_pagina(0, rcr3(), pag_shared);
+	char *buf = (char *) 0;
 	unsigned int i;
 	for (i = 0; i < TAMANO_PAGINA; i++) {
 		buf[i] = 0x00;
 	}
+	unmapear_pagina(0, rcr3());
 
 	// El primer elemento del arreglo esta libre
 	idx_tarea_libre = 0;
@@ -84,7 +89,6 @@ int	crear_proceso(unsigned int cargar_desde)
 {	
 	//Obtener una pagina para el codigo y otra para la pila.
 	unsigned int pagina_codigo = pagina_libre_usuario();
-	pagina_codigo = pagina_codigo;
 	unsigned int esp = pagina_libre_usuario();
 	esp = esp + 4092;
 
@@ -94,10 +98,16 @@ int	crear_proceso(unsigned int cargar_desde)
 	//Crear un directorio de paginas.
 	// Creamos un directorio nuevo con Identity Mapping para la nueva tarea
 	unsigned int pd = inicializar_dir_usuario();
-	pd = pd;
+
+	// Mapeo temporal para acceder a pagina_codigo.
+	// Lo mapeo en la 0 virtual que no hay nada
+	mapear_pagina(0, rcr3(), pagina_codigo);
 
 	//Copiar el codigo a la direccion fisica correspondiendte.
-	memcpy2((void *) pagina_codigo, (void *)cargar_desde, TAMANO_PAGINA);
+	memcpy2((void *) 0, (void *)cargar_desde, TAMANO_PAGINA);
+
+	// Deshago el mapeo temporal
+	unmapear_pagina(0, rcr3());
 
 	//Mapeamos: codigo -> 00; shared -> 12000; esp -> id map
 	mapear_pagina(0x00, pd, pagina_codigo);
@@ -118,8 +128,6 @@ int	crear_proceso(unsigned int cargar_desde)
 	tarea->ss2 = 0;
 	tarea->unused3 = 0;
 	tarea->cr3 = pd; // XXX: atributos ?
-	//tarea->cr3 = rcr3(); // XXX: atributos ?
-	//tarea->eip = 0x12000;
 	tarea->eip = 0x00;
 	tarea->eflags = 0x202;
 	tarea->eax = 0;

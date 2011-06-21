@@ -119,9 +119,9 @@ modo_protegido:
 		
 		;Creamos Page Table
 
-		mov ecx, 1024
+		mov ecx, 512
 		mov ebx, PT_ADDR
-		mov edx, 0x1000 * 1023
+		mov edx, 0x1000 * 511
 		.pt:
 			dec ecx
 			mov [ebx+ecx*4], edx
@@ -227,6 +227,7 @@ modo_protegido:
 		; context switch a la tarea idle
 		;jmp 0x30:0
 
+
 ;Inicializar el scheduler de tareas
 		call inicializar_tsss
 		call inicializar_sched
@@ -235,6 +236,7 @@ modo_protegido:
 		push dword 0x13000
 		call crear_proceso
 		add esp, 4
+
 
 		push dword 0x14000
 		call crear_proceso
@@ -251,7 +253,6 @@ modo_protegido:
 		; habilito las interrupciones una vez 	que ya inicialice el sched
 		sti
 
-		;xchg bx, bx
 		;saltar a la primer tarea
 		jmp 0x38:0
 
