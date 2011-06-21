@@ -193,7 +193,7 @@ modo_protegido:
 		call resetear_pic
 		call habilitar_pic
 
-		sti
+		;sti
 
 		;testing de interrupciones		
 		;xor eax, eax
@@ -231,15 +231,27 @@ modo_protegido:
 		call inicializar_tsss
 		call inicializar_sched
 		
-		xchg bx, bx
-		
 		;Construir tareas
 		push dword 0x13000
-		;push dword 0x12000
 		call crear_proceso
 		add esp, 4
 
-		xchg bx, bx
+		push dword 0x14000
+		call crear_proceso
+		add esp, 4
+
+		push dword 0x15000
+		call crear_proceso
+		add esp, 4
+
+		push dword 0x16000
+		call crear_proceso
+		add esp, 4
+
+		; habilito las interrupciones una vez 	que ya inicialice el sched
+		sti
+
+		;xchg bx, bx
 		;saltar a la primer tarea
 		jmp 0x38:0
 

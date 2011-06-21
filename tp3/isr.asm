@@ -2,6 +2,7 @@ BITS 32
 %include "macrosmodoprotegido.mac"
 
 extern fin_intr_pic1
+extern tarea_actual, proximo_indice, dormir_tarea_control, despertar_tarea_control
 
 global _isr0
 global _isr1
@@ -121,6 +122,9 @@ section .rodata
 	tstrace: db 'stack'
 	tbtrace: db 'backtrace'
 
+	; para el scheduler
+	offset: dd 0
+	selector: dw 0
 
 section .text
 
@@ -407,6 +411,10 @@ _isr32:
 	pushad
 	call fin_intr_pic1
 	call proximo_reloj
+
+	call proximo_indice
+	mov [selector], eax
+	jmp far [offset]
 	popad
 	iret
 
@@ -437,6 +445,10 @@ _isr33:
 	je .print_9
 	cmp al, 0x0b
 	je .print_0
+	cmp al, 0x14
+	je .presiono_tecla_t
+
+	; si no es ninguna de estas, la ignoramos
 	jmp .end
 	
 	.print_1:
@@ -469,15 +481,26 @@ _isr33:
 	.print_0:
 		IMPRIMIR_TEXTO tecla_0, 1, 0x0A, 0, 79
 		jmp .end
-	
+	.presiono_tecla_t:
+		call despertar_tarea_control
+		jmp .end
 	.end:
 		popad
 		iret
 _isr66:
-	mov eax, 666
+	;mov eax, 666
+	pushad
+	call dormir_tarea_control
+	; cambio de proceso a ejecutar
+	call proximo_indice
+	mov [selector], eax
+	jmp far [offset]
+
+	popad
 	iret
 _isr88:
-	mov eax, 42
+	;mov eax, 42
+	call tarea_actual
 	iret
 _isr89:
 	mov eax, 'L'

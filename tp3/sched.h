@@ -8,6 +8,10 @@ extern unsigned short tareas[CANT_TAREAS];
 unsigned short proximo_indice();
 void inicializar_sched();
 
+unsigned short tarea_actual();
 
+void dormir_tarea_control();
+
+void despertar_tarea_control();
 
 #endif
