@@ -5,6 +5,7 @@ BITS 16
 %define KORG 0x1200
 
 global start
+global memcpy2
 extern tsss
 extern gdt
 extern GDT_DESC
@@ -17,7 +18,8 @@ extern deshabilitar_pic
 
 extern inicializar_mmu, inicializar_dir_usuario
 extern inicializar_gdt, entrada_libre_gdt, cargar_tarea_gdt
-extern obtener_entrada_tss, obtener_tss_idle, obtener_tss_inicial
+extern inicializar_tsss, obtener_entrada_tss, obtener_tss_idle, obtener_tss_inicial
+extern inicializar_sched, crear_proceso
 
 
 ;Aca arranca todo, en el primer byte.
@@ -216,23 +218,71 @@ modo_protegido:
 		call cargar_tarea_gdt
 		add esp, 4
 
-		; e) Pongo en el lrt de la tarea inicial
-		xchg bx, bx
+		; e) Pongo en el tr de la tarea inicial
+		;xchg bx, bx
 		mov ax, 0x28
 		ltr ax
 
 		;xchg bx, bx
 		; context switch a la tarea idle
-		jmp 0x30:0
+		;jmp 0x30:0
 
 ;Inicializar el scheduler de tareas
+		call inicializar_tsss
+		call inicializar_sched
+		
+		xchg bx, bx
 		
 		;Construir tareas
+		push dword 0x13000
+		;push dword 0x12000
+		call crear_proceso
+		add esp, 4
 
+		xchg bx, bx
 		;saltar a la primer tarea
+		jmp 0x38:0
 
+		xchg bx, bx
 		jmp $		
 
+
+; void *memcpy2(void *dest, const void *src, size_t n);
+; protege TODOS los registros
+memcpy2:
+	push ebp
+	mov ebp, esp
+	push edi
+	push esi
+	push ebx
+	push edx
+
+	mov edi, [ebp + 8]
+	mov esi, [ebp + 12]
+	mov ebx, [ebp + 16]
+
+	; ebx: longitud
+	; esi: src 
+	; edi: dst
+	.copy:
+		cmp ebx, 0
+		je .fin
+
+		mov dl, [esi]
+		mov byte [edi], dl
+
+		inc esi
+		inc edi
+		dec ebx
+		jmp .copy
+
+	.fin:
+		pop edx
+		pop ebx
+		pop esi
+		pop edi
+		pop ebp
+		ret
 
 %include "a20.asm"
 ;%include "macrosmodoprotegido.mac"
