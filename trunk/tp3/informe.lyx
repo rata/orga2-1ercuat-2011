@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass article
+\textclass paper
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -25,6 +25,7 @@
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -64,17 +65,251 @@ Ejercicio 1
 \end_layout
 
 \begin_layout Standard
-Segmentacion, cambio a modo protegido y preparar pantalla
+La primera tarea consistio en preparar la GDT.
+ Se pidió implementar un modelo de segmentacion 
+\begin_inset Quotes eld
+\end_inset
+
+flat
+\begin_inset Quotes erd
+\end_inset
+
+, que consiste en dos segmentos fundamentales de memoria contigua (que ocupan
+ toda la memoria) uno para codigo y otro para datos.
+ En detalle la GDT consistió en la siguiente tabla:
 \end_layout
 
 \begin_layout Standard
-La primera tarea consistio en preparar la GDT con los segmentos pedidos.
- Consistía en: 
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0x00
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NULL
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0x08
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NULL
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0x10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Código
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0x18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Datos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0x20
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Video
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-Un segmento de código que ocupe todo el espacio direccionable (4gb).
- 
+Indice 02: segmento de código, de 4gb.
+ Va a ser el único selector de codigo utilizado en la GDT.
+ Atributos:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Granularidad = 1: toma el valor de limite y lo shiftea 12 lugares, de esta
+ forma se puede tomar un segmento que ocupe todo el espacio direccionable.
+\end_layout
+
+\begin_layout Itemize
+Type = 0xA: Segmento de código con permisos de ejecución y lectura.
+\end_layout
+
+\begin_layout Itemize
+Segment Present = 1: El segmento se encuentra presente en memoria.
+\end_layout
+
+\begin_layout Itemize
+DPL = 0x00: El nivel de privilegio del segmento de codigo corresponde al
+ más bajo numerico y de mayor privilegio.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Indice 03: segmento de datos, de 4gb.
+ Atributos:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Granularidad = 1
+\end_layout
+
+\begin_layout Itemize
+Type = 0x02: Segmento de datos con permisos de lecto-escritura.
+\end_layout
+
+\begin_layout Itemize
+Segment Present = 1
+\end_layout
+
+\begin_layout Itemize
+DPL = 0x00
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Indice 04: segmento de datos (correspondiente al mapeo de video).
+ Atributos:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Base: 0x0b8000
+\end_layout
+
+\begin_layout Itemize
+Limite: 80*25*2 - 1 (AnchoXAltoX2Bytes - 1)
+\end_layout
+
+\begin_layout Itemize
+Granularidad = 0
+\end_layout
+
+\begin_layout Itemize
+Type = 0x02
+\end_layout
+
+\begin_layout Itemize
+Segment present = 1
+\end_layout
+
+\begin_layout Itemize
+DPL = 0x00
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Luego de completar la GDT en gdt.c cargamos el puntero a la base de la tabla
+ en el registro GDTR con la instrucción LGDT.
+ Con esto queda cargada la GDT.
+\end_layout
+
+\begin_layout Standard
+El siguiente paso es pasar el procesador a modo protegido.
+ Para hacer esto hay una sola forma:
+\end_layout
+
+\begin_layout Enumerate
+Poner el 1er bit de CRO en 1, que corresponde a PE (Protection Enabled).
+\end_layout
+
+\begin_layout Enumerate
+Cargar en el selector de código CS un segmento de código, ya que hasta el
+ momento se usaba un selector nulo.
+ Para hacer esto debemos hacer un JMP al índice de la GDT correspondiente
+ al segmento.
+ En nuestro caso es 0x10, que es el 3 segmento configurado (luego de dos
+ segmentos nulos).
+\end_layout
+
+\begin_layout Standard
+Después de este último paso el CPU está en Modo Protegido, con lo cuál debemos
+ cargar el resto de los registros de selectores.
+ Cargamos en ES el segmento dedicado a escribir en pantalla 0x20, y el resto
+ (DS, GS, FS, SS) con el segmento de datos 0x18.
+\end_layout
+
+\begin_layout Standard
+Para probar que la segmentación funciona correctamente escribimos en pantalla.
+ Ponemos toda la pantalla negra y dejamos dos lineas blancas, la primera
+ y última.
+ Esto implicó hacer 3 ciclos simples que escribieran en la memoria con el
+ selector de video.
 \end_layout
 
 \begin_layout Section*
@@ -82,19 +317,224 @@ Ejercicio 2
 \end_layout
 
 \begin_layout Standard
-(cambiar selector de segmento de macro)
+En este ejercicio comenzamos a trabajar con las interrupciones, que de aquí
+ en más ibamos a tener muchisimas por errores durante el trabajo, así que
+ el ejercicio completo consistia en tener un mensaje de error 
+\begin_inset Quotes eld
+\end_inset
+
+amigable
+\begin_inset Quotes erd
+\end_inset
+
+ que muestre la información del CPU al momento del 
+\begin_inset Quotes eld
+\end_inset
+
+desastre
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Lo primero fue completar la IDT, dentro de la estructura provista por la
+ cátedra en 
+\emph on
+idt.c
+\emph default
+.
+ Notamos que en macro para definir cada entrada habia un error: el selector
+ de segmento era erroneo, y lo cambiamos por el selector de codigo (0x10).
+ Allí completamos las interrupciones de 0 a 19.
 \end_layout
 
 \begin_layout Standard
-Que interrupciones agregamos (para que cada cosa)
+En 
+\emph on
+isr.asm
+\emph default
+, hicimos una funcion para cada interrupción.
+ En cada funcion al principio la completamos con un JMP $ para verificar
+ que esté llegando a este handler, y luego nos enfocamos en el detalle de
+ cada función.
 \end_layout
 
 \begin_layout Standard
-Como imprimir texto y registros
+Primero escribimos un mensaje contextual para saber de que interrupcion
+ se habia tratado.
+ Usamos la función 
+\emph on
+IMPRIMIR_TEXTO, 
+\emph default
+y un define byte en la sección 
+\emph on
+.rodata
+\emph default
+ para tener guardados cada mensaje.
+ Lo siguiente fue imprimir todos los registros, para lo cual tambien usamos
+ la misma función para imprimir y 
+\emph on
+DWORD_TO_HEX 
+\emph default
+para convertir el contenido de los registros a hexadecimal y que sea 
+\begin_inset Quotes eld
+\end_inset
+
+legible
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-Como Calculamos stack y backtrace.
+Luego imprimimos el Stack y Backtrace.
+ El Stack fue simple y corresponde al siguiente codigo:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+; fila en pantalla a partir 
+\end_layout
+
+\begin_layout Plain Layout
+
+; de la que empiezo a imprimir
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ecx, 12 	
+\end_layout
+
+\begin_layout Plain Layout
+
+; ebx = cantidad de iteraciones
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ebx, 0 	
+\end_layout
+
+\begin_layout Plain Layout
+
+.print_strace:
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; fila donde comienza la pila 
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; (si llegue aca no debo seguir)	
+\end_layout
+
+\begin_layout Plain Layout
+
+  cmp esp, 0x1C000 
+\end_layout
+
+\begin_layout Plain Layout
+
+  je .strace_end
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; vamos a imprimir como 
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; mucho 6 elementos
+\end_layout
+
+\begin_layout Plain Layout
+
+  cmp ebx, 6
+\end_layout
+
+\begin_layout Plain Layout
+
+  je .strace_end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  mov eax, [esp + ebx * 4]
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; convierto a hexa
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; y copio el registro a una posición de memoria
+\end_layout
+
+\begin_layout Plain Layout
+
+  DWORD_TO_HEX eax, treg 
+\end_layout
+
+\begin_layout Plain Layout
+
+  IMPRIMIR_TEXTO treg, 8, 0x1A, ecx, 0x16
+\end_layout
+
+\begin_layout Plain Layout
+
+  inc ebx
+\end_layout
+
+\begin_layout Plain Layout
+
+  inc ecx
+\end_layout
+
+\begin_layout Plain Layout
+
+  jmp .print_strace
+\end_layout
+
+\begin_layout Plain Layout
+
+.strace_end:
+\end_layout
+
+\end_inset
+
+El caso del Backtrace es un caso similar, ya que debemos solamente imprimir
+ el contenido de las direcciones de retorno.
+ Las direcciones de retorno estan siempre en EBP+4, en la medida que las
+ vamos imprimiendo vamos haciendo POP, hasta llegar a las primeras 6 o al
+ principio de la fila.
+\end_layout
+
+\begin_layout Standard
+Siempre al final de cada función handler que imprime pusimos un JMP $ para
+ dejar al procesador 
+\begin_inset Quotes eld
+\end_inset
+
+loopeando
+\begin_inset Quotes erd
+\end_inset
+
+, ya que por el momento no vamos a hacer nada más con las interrupciones.
 \end_layout
 
 \begin_layout Section*
@@ -107,6 +547,10 @@ Paginacion: creacion de tablas de directorio y de paginas, habilitar paginacion
 
 \begin_layout Standard
 Probar paginacion escribiendo nombre de grupo en pantalla
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Section*
