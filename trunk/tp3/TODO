@@ -6,6 +6,8 @@ Hecho
 Pregunta 1:
 Da error de General Protection. Tira este error porque estámos tratando de acceder con un segmento fuera de su limite.
 
+XXX: cambie el limite del segmento de video, esta bien asi, no ?
+
 
 ##################################
 
@@ -17,16 +19,39 @@ Pregunta 2:
  -Escribiendo con el segmento de video en un offset superior al limite (int 13)
  -Escribiendo en el codigo un Opcode invalido (ej: db 'r') (int 6)
 
+Pregunta 3:
+lo que pushie y EFLAGS, CS, EIP
+
 Pregunta 4:
 Sí, siempre que haya alguna forma de encontrar los codigos de retornos
 anteriores. En la convención C esto ocurre y por eso se puede hacer. Pero no es
-la unica convecion con la que se podría hacer.
+la unica convencion que se puede definir con la que se puede lograr un backtrace.
 
 ##################################
 
 Ejercicio 3: habilitar paginacion
 Hecho
-Faltan preguntas
+
+Pregunta 5:
+Si
+<falta pseudocodigo>
+
+Pregunta 6:
+
+Para acceder a cualquier posicion de la memoria debe apuntar la entrada de
+directorio correspondiente a una tabla que tenga en el indice adecuado la
+direccion fisica. Es decir, si puede tambien crear esta tabla (en algun
+espacion de memoria que tenga permisos) podra acceder a cualquier direccion
+fisica.
+
+Pregunta 7:
+
+Hay espacio en memoria usado para ld GDT y, si esta habilitada paginacion, para
+el Page Directory y el Page Table. Tambien el kernel esta puesto en memoria.
+Luego, si escribe en lo 4gb estaria pisando estas estructuras, el kernel y a la
+tarea misma. Es decir que una vez que piso su Page Directory (por decir un
+ejemplo) se generara (probablemente) una excepcion la proxima vez que intente
+escribir/leer de memoria.
 
 ##################################
 
@@ -34,6 +59,11 @@ Ejercicio 4: manejo de paginas
 Hecho
 
 Pregunta 8:
+Cada entrada de la tabla de directorios y de paginas lleva permisos de
+supervisor, porque de esta forma se evita que cualquiera con CPL=3 modifique a
+donde apunta. Es decir, al ponerlo en las entradas de directorios y en las
+entradas de paginas, nadie puede modificar a que tabla apunta una entrada de
+directorio o a que direccion fisica apunta una entrada de tabla
 
 Pregunta 9:
 Si. Si en el directorio de tabla de paginas ponemos dos entradas que apunten a la misma tabla de pagina.
@@ -45,13 +75,27 @@ Es una memoria caché que tiene partes de la tabla de páginación. El objetivo 
 
 Ejercicio 5: handler de interrupciones
 Hecho
-Faltan preguntas
 
 ##################################
 
 Ejercicio 6: Tareas
-nada
-Faltan preguntas
+
+Pregunta 11:
+corriendo desde la consola de bochs 'info tss' muestra la informacion de la
+tarea actual. Tambien, corriendo 'info gdt' deberia marcar la entrada de la GDT correspondiente a la tarea
+como Busy.
+
+Pregunta 12:
+Poniendo un breakpoint antes de hacer el jmp que cambia el contexto. Ignoro el
+primer breakpoint (cambio de contexto del kernel a la primer tarea) y luego en
+el proximo breakpoint se puede correr creg e info tss y ver que cambia respecto
+de la proxima vez que se detiene por este breakpoint.
+
+Pregunta 13:
+Si no se pone un handler para esas interrupciones, cuando surja esa interrupcion, se genera un #GP.
+Esto pasa porque no hay una entrada valida en la IDT. 
+Segun el manual de intel (3A 6-51), ocurrio "Accessing a gate that contains a null segment selector"
+o "The segment selector in a call, interrupt, or trap gate does not point to a code segment".
 
 ##################################
 
