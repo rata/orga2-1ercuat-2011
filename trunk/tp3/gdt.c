@@ -43,7 +43,7 @@ gdt_entry gdt[GDT_COUNT] = {
 
 	// Segmento de video
 	(gdt_entry){
-		(unsigned short) 80*25*2,   //limit_0_15: 80*25 = 0x7D0 
+		(unsigned short) 80*25*2 - 1 ,   //limit_0_15
  		(unsigned short) 0x8000,   //base_0_15
 		(unsigned char)  0x0b,     //base_23_16
 		(unsigned char)  0x2,      //type:4, 0x2 = Read/Write
