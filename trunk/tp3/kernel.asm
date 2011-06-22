@@ -5,7 +5,6 @@ BITS 16
 %define KORG 0x1200
 
 global start
-global memcpy2
 extern tsss
 extern gdt
 extern GDT_DESC
@@ -258,44 +257,6 @@ modo_protegido:
 
 		xchg bx, bx
 		jmp $		
-
-
-; void *memcpy2(void *dest, const void *src, size_t n);
-; protege TODOS los registros
-memcpy2:
-	push ebp
-	mov ebp, esp
-	push edi
-	push esi
-	push ebx
-	push edx
-
-	mov edi, [ebp + 8]
-	mov esi, [ebp + 12]
-	mov ebx, [ebp + 16]
-
-	; ebx: longitud
-	; esi: src 
-	; edi: dst
-	.copy:
-		cmp ebx, 0
-		je .fin
-
-		mov dl, [esi]
-		mov byte [edi], dl
-
-		inc esi
-		inc edi
-		dec ebx
-		jmp .copy
-
-	.fin:
-		pop edx
-		pop ebx
-		pop esi
-		pop edi
-		pop ebp
-		ret
 
 %include "a20.asm"
 ;%include "macrosmodoprotegido.mac"

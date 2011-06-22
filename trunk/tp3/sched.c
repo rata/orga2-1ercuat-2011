@@ -7,8 +7,7 @@
 static unsigned int pag_shared;
 
 //Implementado en kernel.asm
-void memcpy2(void *dest, const void *src, unsigned int n);
-void *memcpy3(void *dest, const void *src, unsigned int n);
+void *memcpy2(void *dest, const void *src, unsigned int n);
 
 unsigned short tareas[CANT_TAREAS];
 
@@ -73,7 +72,7 @@ void inicializar_sched()
 	dormida = 0;
 }
 
-void *memcpy3(void *dest, const void *src, unsigned int n)
+void *memcpy2(void *dest, const void *src, unsigned int n)
 {
 	char *from = (char *) src;
 	char *to = (char *) dest;
