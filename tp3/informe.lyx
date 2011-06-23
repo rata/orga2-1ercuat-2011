@@ -824,24 +824,24 @@ Ejercicio 5
 \end_layout
 
 \begin_layout Standard
-Reconfiguramos PIC para que genere otros numeros de interrupciones (ver
- clase)
+Para que las interrupciones por hardware lleguen con un valor que no se
+ pise con las excepciones ya definidas por el procesador.
+ Para esto se usaron las funciones provistas por la cátedra.
 \end_layout
 
 \begin_layout Standard
-Agregamos entradas a IDT para interrupciones 32, 33, 88, 66 y 89
+Agregamos usando la macro definida (que modificamos el selector para que
+ sea el del segmento de código que usamos) handlers para las interrupciones
+ 32, 33 (clock y teclado), 66, 88 y 89.
+ En el handler de la interrupción de reloj se llama a la funcion pedida
+ para que dibuje el clock.
 \end_layout
 
 \begin_layout Standard
-handler de interrupcion de reloj para que dibuje el reloj
-\end_layout
-
-\begin_layout Standard
-Handler de interrupcion teclado con impresion en pantalla usando scancodes
-\end_layout
-
-\begin_layout Standard
-probamos el resto de las interrupciones modificando eax
+En el handler de la interrupcion de teclado se uso los scancodes de las
+ teclas para imprimir la que corresponda e ignore si no era ningun número.
+ Vale la pena aclarar que solo se usaron los números del teclado qwerty
+ que se encuentran sobre las letras y no los del teclado numérico.
 \end_layout
 
 \begin_layout Section*
