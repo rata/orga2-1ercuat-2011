@@ -875,7 +875,27 @@ Ejercicio 7
 \end_layout
 
 \begin_layout Standard
-Describir crear proceso.
+En la funcion crear proceso se piden dos páginas libres de usuario: una
+ para el kernel y otra para la pila.
+ Como la pila crece hacia arriba y usamos 32 bits, se apunta al final de
+ la página.
+ Se copia el codigo en la pagina que se pidio para el codigo (como esa direccion
+ virtual no es accesible desde el cr3 en uso, se la mapea temporalmente).
+ Tambien al page directory se crea con identity mapping salvo para las direccion
+es que el enunciado pide otro mapeo, que se respeta.
+ Tambien se crea una entrada nueva para un tss en memoria, se lo completa
+ con valores coherentes (eflags con interrupciones habilitadas, la pila,
+ el EIP y segmentos) y se la almacena en la gdt.
+ También se guarda en un arreglo el selector de la gdt para facilitar la
+ implementación de 
+\begin_inset Quotes eld
+\end_inset
+
+proximo_indice
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
