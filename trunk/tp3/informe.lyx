@@ -537,20 +537,179 @@ loopeando
 , ya que por el momento no vamos a hacer nada más con las interrupciones.
 \end_layout
 
+\begin_layout Standard
+Para que el procesador tome estos handlers lo que debemos hacer es completar
+ el registro LDTR con el puntero a la IDT.
+\end_layout
+
 \begin_layout Section*
 Ejercicio 3
 \end_layout
 
 \begin_layout Standard
-Paginacion: creacion de tablas de directorio y de paginas, habilitar paginacion
+Este ejercicio consistió en activar paginacion con Identity Mapping, es
+ decir, que la dirección virtual 
+\begin_inset Quotes eld
+\end_inset
+
+mapee
+\begin_inset Quotes erd
+\end_inset
+
+ a la misma dirección física.
+ La memoria a mapear son los primeros 2MB (0x00000000 a 0x001FFFF).
+ Para activar paginación primero tenemos que crear los elementos necesarios:
+ un Page Directory y las correspondientes Page Tables.
+ En este caso necesitamos una sola entrada de Page Directory y una Page
+ Table (512 page entries solamente) para mapear 2MB.
+ Esto se debe a que cada página es de 4K, y para mapear 2MB necesito 512
+ páginas.
 \end_layout
 
 \begin_layout Standard
-Probar paginacion escribiendo nombre de grupo en pantalla
+El PD tiene 1024 entradas de 32bits cada una.
+ Cada entrada contiene un puntero a una PT, aunque en los primeros 12 bits
+ hay algunos flags para atributos.
+ Los atributos a tener en cuenta son los de Present y Read/Write.
+ Para tener una entrada valida como nosotros queremos trabajar deben estar
+ ambos en 1.
+ 
 \end_layout
 
 \begin_layout Standard
+Para cargar el PD, pusimos la primera entrada apuntando a la única PT, con
+ los atributos correspondientes.
+ En el resto del PD pusimos entradas nulas.
+\end_layout
 
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+; cantidad de entradas
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ecx, 1024
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ebx, PD_ADDR
+\end_layout
+
+\begin_layout Plain Layout
+
+; flag de entrada de memoria no presente
+\end_layout
+
+\begin_layout Plain Layout
+
+mov eax, 0x2
+\end_layout
+
+\begin_layout Plain Layout
+
+.pd: 			
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; cargamos todas las PDE como no presentes (nulas)
+\end_layout
+
+\begin_layout Plain Layout
+
+  mov dword [ebx+ecx*4], eax	
+\end_layout
+
+\begin_layout Plain Layout
+
+  loop .pd
+\end_layout
+
+\begin_layout Plain Layout
+
+; ponemos los ultimos 2 bits en 1
+\end_layout
+
+\begin_layout Plain Layout
+
+; (present y read/write)
+\end_layout
+
+\begin_layout Plain Layout
+
+mov dword [PD_ADDR], PT_ADDR+0x3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Luego completamos la PT.
+ El método es similar, la diferencia es que cada entrada es la dirección
+ base de cada página.
+ También tiene los mismos atributos.
+\end_layout
+
+\begin_layout Standard
+Para habilitar la paginación primero debemos completar el CR3 y luego poner
+ en 1 el último bit del CR0.
+ Este último bit es el que hace efectiva la paginacion.
+ En CR3 debe existir un puntero a la Page Directory (o sea PD_ADDR).
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mov eax, PD_ADDR 		
+\end_layout
+
+\begin_layout Plain Layout
+
+mov cr3, eax		 		
+\end_layout
+
+\begin_layout Plain Layout
+
+mov eax, cr0 		
+\end_layout
+
+\begin_layout Plain Layout
+
+or eax, 0x80000000 		
+\end_layout
+
+\begin_layout Plain Layout
+
+mov cr0, eax
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para probar que esta paginación funciona correctamente lo que hacemos es
+ imprimir en la esquina superior de la pantalla el nombre del grupo.
+ La forma de escribir es igual a cuando escribimos luego de habilitar segmentaci
+ón.
+ La diferencia es que esta vez el procesador esta usando el mapeo por IdentityMa
+pping, con lo cuál está haciendo una transformación de dirección logica
+ (segmento + offset) a direccion virtual (segmentación), luego otra transformaci
+ón de direccion virtual a dirección física (paginación).
 \end_layout
 
 \begin_layout Section*
@@ -558,32 +717,106 @@ Ejercicio 4
 \end_layout
 
 \begin_layout Standard
-Funciones para administracion de memoria: MMU
+La paginación nos va a permitir darle a distintas tareas partes de la memoria,
+ y además que esas tareas solo puedan escribir en esas páginas.
+ Para poder hacer esto debemos completar varias funciones.
+ 
 \end_layout
 
 \begin_layout Standard
-2 variables globales con puntero a las siguientes paginas de usuario/kernel
- libre
+Pusimos dos variables globales con puntero a las siguientes páginas de usuario
+ y kernel libres respectivamente.
+ De esta forma sabemos que página devolver en la próxima petición.
+ Estas variables son inicializadas por la función inicializar_mmu a la que
+ llamamos al comienzo.
 \end_layout
 
 \begin_layout Standard
-funcion para incializar estas variables
+Las funciones para dar paginas libres son: 
+\emph on
+pagina_libre_usuario y pagina_libre_kernel.
+
+\emph default
+ En ambas devolvemos el valor actual de las variables globales que nombramos
+ anteriormente y luego la incrementa para que sigan apuntando a la siguiente
+ página libre.
 \end_layout
 
 \begin_layout Standard
-funciones para obtener páginas libres de usuario/kernel
+Inicializar_dir_usuario es una funcion que cumple el mismo rol de lo hecho
+ en el ejercicio anterior, pero en C.
+ Sin embargo tiene la flexibilidad de que se la puede llamar en cualquier
+ momento, y no tiene hardcodeadas las direcciones de las tablas.
+ Entonces luego de llamar a esta funcion desde el Kernel, queda guardad
+ en memoria un PD, con una entrada que apunta a una PT para hacer IdentityMappin
+g de los primeros 2MB.
+ En esta PT, tiene entradas de tabla solo en su primera mitad, porque nos
+ alcanzan con 512 páginas.
 \end_layout
 
 \begin_layout Standard
-Inicializar_dir_usuario hace Identity Mapping entre 0 y 0x2000000
+Para probar esta funcion lo que hacemos es reemplazar el CR3, con la direccion
+ de la nueva tabla, escribimos en la pantalla y luego volvemos a la normalidad.
+ Este proceso verifica que el procesador puede acceder a ambas tablas.
 \end_layout
 
 \begin_layout Standard
-funciones mapear_pagina y unmapear_pagina
+Hasta aquí solo 2MB de la memoria son accesibles, por eso necesitamos 2
+ funciones que permitan mapear el resto.
+ Para esto estan, 
+\emph on
+mapear_pagina y unmapear_pagina.
+
+\emph default
+ 
 \end_layout
 
 \begin_layout Standard
-probar inicializar_dir_usuario escribiendo en pantalla (cambiando cr3)
+Mapear página agrega los registros correspondientes en la PD y PT para poder
+ mapear una dirección virtual a una física.
+ Hace los siguientes cambios:
+\end_layout
+
+\begin_layout Itemize
+Obtiene el offset correspondiente a la entrada de directorio segun la direccion
+ virtual.
+ Son los 10bits más significativos.
+\end_layout
+
+\begin_layout Itemize
+Obtiene el offset para la entrada de tabla.
+ Desde el bit 21 hasta el 12 inclusive.
+\end_layout
+
+\begin_layout Itemize
+Con los dos offset de arriba sabémos en que posición debemos colocar cada
+ entrada.
+\end_layout
+
+\begin_layout Itemize
+Obtenemos de la PD, la entrada correspondiente, y nos fijamos si tiene ya
+ ingresada una tabla.
+ Sino pedimos memoria, para esa tabla y guardamos el puntero a esa dirección
+ de memoria con los atributos de present y read/write.
+\end_layout
+
+\begin_layout Itemize
+En la tabla, vamos hasta el offset que sacamos al principio, y allí guardamos
+ el puntero a la memoria que recibimos por parametro.
+ También poniendole los flags correspondientes.
+\end_layout
+
+\begin_layout Standard
+La funcion 
+\emph on
+unmapear_pagina
+\emph default
+ es inversa, pero solo recibe por parametro la dirección virtual porque
+ es lo que necesita para buscar en la PD y PT y deshacer el cambio.
+ Basicamente busca los offset a partir de la dirección virtual, va a PD,
+ allí consigue el puntero a la PT, y en la PT con el offset de pagina borra
+ la PTEntry correspondiente.
+ Luego de hacer esto esa dirección virtual de memoria deja de ser accesible.
 \end_layout
 
 \begin_layout Section*
