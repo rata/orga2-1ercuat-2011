@@ -1,0 +1,1097 @@
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass paper
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Ejercicio 1
+\end_layout
+
+\begin_layout Standard
+Para respetar que los segmentos de índice 2 y 3 sean segmentos de código
+ y datos respectivamente se decidio dejar los primeros dos segmentos (índices
+ 0 y 1) nulos.
+ El segmento de índice 4 se utilizó para direccionar a memoria de video,
+ como pide el enunciado.
+ De esta forma, la estructura de la GDT resultante es:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features>
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Índice
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Segmento
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NULL
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NULL
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Código
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Datos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Video
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para crear la gdt se utilizó el arreglo 
+\begin_inset Quotes eld
+\end_inset
+
+gdt
+\begin_inset Quotes erd
+\end_inset
+
+ definido en gdt.c.
+ Y para completar cada entrada de la GDT se utilizó la estructura 
+\begin_inset Quotes eld
+\end_inset
+
+gdt_entry
+\begin_inset Quotes erd
+\end_inset
+
+ provista por la cátedra.
+ Los atributos de cada segmento que vale la pena destacar son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+Indice 02 (segmento de código, de 4gb):
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Granularidad = 1: toma el valor de limite y lo shiftea 12 lugares, de esta
+ forma se puede tomar un segmento que ocupe todo el espacio direccionable.
+\end_layout
+
+\begin_layout Itemize
+Type = 0xA: Segmento de código con permisos de ejecución y lectura.
+\end_layout
+
+\begin_layout Itemize
+Segment Present = 1: El segmento se encuentra presente en memoria.
+\end_layout
+
+\begin_layout Itemize
+DPL = 0x00: El nivel de privilegio del segmento de codigo corresponde al
+ más bajo numerico y de mayor privilegio.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Indice 03 (segmento de datos, de 4gb):
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Granularidad = 1
+\end_layout
+
+\begin_layout Itemize
+Type = 0x02: Segmento de datos con permisos de lectura/escritura.
+\end_layout
+
+\begin_layout Itemize
+Segment Present = 1
+\end_layout
+
+\begin_layout Itemize
+DPL = 0x00
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Indice 04 (segmento de datos, correspondiente al mapeo de video).
+ Como la memoria de video se corresponde con una matriz de 25 filas y 80
+ columnas, donde cada elemento ocupa dos bytes, el tamaño total es 
+\begin_inset Formula $80\times25\times2$
+\end_inset
+
+ bytes.
+ Atributos:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Base: 0x0b8000
+\end_layout
+
+\begin_layout Itemize
+Limite: 80*25*2 - 1
+\end_layout
+
+\begin_layout Itemize
+Granularidad = 0
+\end_layout
+
+\begin_layout Itemize
+Type = 0x02
+\end_layout
+
+\begin_layout Itemize
+Segment present = 1
+\end_layout
+
+\begin_layout Itemize
+DPL = 0x00
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Luego de completar la GDT en gdt.c cargamos el puntero a la base de la tabla
+ en el registro GDTR con la instrucción LGDT.
+ Con esto queda cargada la GDT.
+\end_layout
+
+\begin_layout Standard
+El siguiente paso es pasar el procesador a modo protegido.
+ Para hacer se hizo:
+\end_layout
+
+\begin_layout Enumerate
+Poner el 1
+\begin_inset Formula $^{er}$
+\end_inset
+
+ bit del registro CRO en 1, que corresponde a PE (Protection Enabled).
+\end_layout
+
+\begin_layout Enumerate
+Cargar en el selector de código CS un segmento de código, ya que hasta el
+ momento se usaba un selector nulo.
+ Para hacer esto debemos hacer un JMP al índice de la GDT correspondiente
+ al segmento.
+ En nuestro caso es 0x10, que es el segmento de índice 2 (luego de dos segmentos
+ nulos).
+\end_layout
+
+\begin_layout Standard
+Después de este último paso el procesador está en Modo Protegido, con lo
+ cual debemos cargar el resto de los registros de selectores.
+ Cargamos en ES el segmento dedicado a escribir en pantalla (0x20), y el
+ resto (DS, GS, FS, SS) con el segmento de datos 0x18.
+\end_layout
+
+\begin_layout Standard
+Para probar que la segmentación funciona correctamente escribimos en pantalla.
+ Ponemos toda la pantalla negra y dejamos dos lineas blancas, la primera
+ y última.
+ Esto implicó hacer 3 ciclos simples que escribieran en la memoria con el
+ selector de video.
+\end_layout
+
+\begin_layout Section*
+Ejercicio 2
+\end_layout
+
+\begin_layout Standard
+Los handlers para las interrupciones/excepciones se crearon en la función
+ 
+\begin_inset Quotes eld
+\end_inset
+
+inicializar_idt
+\begin_inset Quotes erd
+\end_inset
+
+ usando el macro 
+\begin_inset Quotes eld
+\end_inset
+
+IDT_ENTRY
+\begin_inset Quotes erd
+\end_inset
+
+ provisto por la cátedra.
+ Para esto fue necesario modificar el macro cambiando el selector que usaba,
+ ya que el segmento de código se encuentra en el 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+índice 0x10
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ y no 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+0x8
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+.
+ Este macro crea una entrada en la IDT que ejecutará, para la interrupción
+ número 
+\begin_inset Formula $i$
+\end_inset
+
+, la función llamada 
+\begin_inset Quotes eld
+\end_inset
+
+_isr
+\begin_inset Formula $i$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Por este motivo en 
+\emph on
+isr.asm
+\emph default
+ hicimos una funcion para cada interrupción con este nombre.
+\end_layout
+
+\begin_layout Standard
+En cada funcion, en una primera instancia, realizamos un 
+\begin_inset Formula $jmp\,\$$
+\end_inset
+
+ para verificar que esté llegando a este handler, y luego nos enfocamos
+ en el detalle de cada función.
+\end_layout
+
+\begin_layout Standard
+Primero escribimos un mensaje contextual para saber de que interrupcion
+ se habia tratado.
+ Usamos el macro 
+\emph on
+IMPRIMIR_TEXTO.
+
+\emph default
+ Luego imprimimos también el contenido de los registros, usando 
+\emph on
+DWORD_TO_HEX 
+\emph default
+para convertir el contenido de los registros a ASCII.
+\end_layout
+
+\begin_layout Standard
+Luego imprimimos el Stacktrace y Backtrace.
+ El Stacktrace fue simple y corresponde al siguiente codigo (tener en cuenta
+ que en 0x1C000 es donde se inicializa el esp/ebp):
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+; fila en pantalla a partir 
+\end_layout
+
+\begin_layout Plain Layout
+
+; de la que empiezo a imprimir
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ecx, 12 	
+\end_layout
+
+\begin_layout Plain Layout
+
+; ebx = cantidad de iteraciones
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ebx, 0 	
+\end_layout
+
+\begin_layout Plain Layout
+
+.print_strace:
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; fila donde comienza la pila 
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; (si llegue aca no debo seguir)	
+\end_layout
+
+\begin_layout Plain Layout
+
+  cmp esp, 0x1C000 
+\end_layout
+
+\begin_layout Plain Layout
+
+  je .strace_end
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; vamos a imprimir como 
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; mucho 6 elementos
+\end_layout
+
+\begin_layout Plain Layout
+
+  cmp ebx, 6
+\end_layout
+
+\begin_layout Plain Layout
+
+  je .strace_end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  mov eax, [esp + ebx * 4]
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; convierto a hexa
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; y copio el registro a una posición de memoria
+\end_layout
+
+\begin_layout Plain Layout
+
+  DWORD_TO_HEX eax, treg 
+\end_layout
+
+\begin_layout Plain Layout
+
+  IMPRIMIR_TEXTO treg, 8, 0x1A, ecx, 0x16
+\end_layout
+
+\begin_layout Plain Layout
+
+  inc ebx
+\end_layout
+
+\begin_layout Plain Layout
+
+  inc ecx
+\end_layout
+
+\begin_layout Plain Layout
+
+  jmp .print_strace
+\end_layout
+
+\begin_layout Plain Layout
+
+.strace_end:
+\end_layout
+
+\end_inset
+
+El caso del Backtrace es un caso similar, ya que debemos solamente imprimir
+ el contenido de las direcciones de retorno.
+ Las direcciones de retorno estan siempre en EBP+4, en la medida que las
+ vamos imprimiendo vamos haciendo POP de los ebp anteriores, hasta llegar
+ a las primeras 6 o al primer ebp.
+\end_layout
+
+\begin_layout Standard
+Siempre al final de cada función que imprime pusimos un 
+\begin_inset Formula $jmp\,\$$
+\end_inset
+
+ para dejar al procesador 
+\begin_inset Quotes eld
+\end_inset
+
+loopeando
+\begin_inset Quotes erd
+\end_inset
+
+ con el stack/back trace y el contenido de los registros en pantalla.
+\end_layout
+
+\begin_layout Standard
+Para que el procesador tome estos handlers lo que debemos hacer es cargar
+ el registro del procesador con la instruccion IDTR.
+\end_layout
+
+\begin_layout Section*
+Ejercicio 3
+\end_layout
+
+\begin_layout Standard
+Este ejercicio consistió en activar paginacion con Identity Mapping, es
+ decir, que la dirección virtual 
+\begin_inset Formula $X$
+\end_inset
+
+ se corresponda con la dirección física 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ Antes de activar paginación se crearon los elementos necesarios: un Page
+ Directory y las correspondientes Page Tables.
+ Para realizar los mapeos pedidos se necesitó una sola entrada de Page Directory
+ y una Page Table.
+ Esto se debe a que cada página es de 4K, y para mapear 2MB se necesitan,
+ entonces, 512 páginas.
+\end_layout
+
+\begin_layout Standard
+El PD tiene 1024 entradas de 32bits cada una.
+ Cada entrada contiene un puntero a una PT, aunque en los primeros 12 bits
+ hay algunos flags para atributos.
+ Los atributos pertinentes en este trabajo son los de Present y Read/Write,
+ y deben estar en 1.
+\end_layout
+
+\begin_layout Standard
+Para cargar el PD pusimos la primera entrada apuntando a la única PT, con
+ los atributos correspondientes.
+ En el resto del PD pusimos entradas nulas.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+; cantidad de entradas
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ecx, 1024
+\end_layout
+
+\begin_layout Plain Layout
+
+mov ebx, PD_ADDR
+\end_layout
+
+\begin_layout Plain Layout
+
+; flag de entrada de memoria no presente
+\end_layout
+
+\begin_layout Plain Layout
+
+mov eax, 0x2
+\end_layout
+
+\begin_layout Plain Layout
+
+.pd: 			
+\end_layout
+
+\begin_layout Plain Layout
+
+  ; cargamos todas las PDE como no presentes (nulas)
+\end_layout
+
+\begin_layout Plain Layout
+
+  mov dword [ebx+ecx*4], eax	
+\end_layout
+
+\begin_layout Plain Layout
+
+  loop .pd
+\end_layout
+
+\begin_layout Plain Layout
+
+; ponemos los ultimos 2 bits en 1
+\end_layout
+
+\begin_layout Plain Layout
+
+; (present y read/write)
+\end_layout
+
+\begin_layout Plain Layout
+
+mov dword [PD_ADDR], PT_ADDR+0x3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Luego completamos la PT.
+ El método es similar, la diferencia es que cada entrada es la dirección
+ base de cada página.
+ También tiene los mismos atributos.
+\end_layout
+
+\begin_layout Standard
+Para habilitar la paginación primero se debe completar el CR3 y luego poner
+ en 1 el último bit del CR0.
+ Este último bit es el que hace efectiva la paginación.
+ En CR3 debe existir un puntero a la Page Directory (o sea PD_ADDR).
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mov eax, PD_ADDR 		
+\end_layout
+
+\begin_layout Plain Layout
+
+mov cr3, eax		 		
+\end_layout
+
+\begin_layout Plain Layout
+
+mov eax, cr0 		
+\end_layout
+
+\begin_layout Plain Layout
+
+or eax, 0x80000000 		
+\end_layout
+
+\begin_layout Plain Layout
+
+mov cr0, eax
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para probar que la paginación realizada funciona correctamente, lo que hacemos
+ es imprimir en la esquina superior de la pantalla el nombre del grupo.
+ La forma de escribir es igual a cuando escribimos luego de habilitar segmentaci
+ón, pero la diferencia es que esta vez el procesador está usando paginación,
+ y si se mapeo adecuadamente con identity mapping, se escribirá en la pantalla
+ pasando por la unidad de paginación.
+\end_layout
+
+\begin_layout Section*
+Ejercicio 4
+\end_layout
+
+\begin_layout Standard
+Se crearon dos variables globales que apuntan a las siguientes páginas libres
+ de usuario y de kernel.
+ Estas variables son inicializadas por la función 
+\emph on
+inicializar_mmu
+\emph default
+ con las primeras páginas de usuario y kernel libres.
+ Luego, en las funciones
+\emph on
+ pagina_libre_usuario 
+\emph default
+y
+\emph on
+ pagina_libre_kernel
+\emph default
+, lo que se hace es devolver el puntero correspondiente e incrementarlo
+ para que apunte a la siguiente página (manteniendo el invariante de que
+ apunta a la siguiente página libre)
+\emph on
+.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+inicializar_dir_
+\emph default
+usuario es una función que cumple un rol similar a lo hecho en el ejercicio
+ anterior, pero en C.
+ Se piden dos paginas libres de kernel a la funcion 
+\emph on
+pagina_libre_
+\emph default
+kernel para usar como PD y PT.
+ Se apunta la primer entrada del PD a la PT y se pone el resto de las entradas
+ como nulas.
+ Luego, se realiza en la PT el mapeo a las direcciones físicas pedidas.
+ Todos estos procedimientos usando los atributos de present y read/write
+ en 1.
+ Es importante notar que para realizar los mapeos pedidos alcanza con una
+ sola tabla de páginas.
+\end_layout
+
+\begin_layout Standard
+Para probar esta funcion se reemplaza el CR3 con la dirección de la nueva
+ tabla de directorio creada por 
+\emph on
+inicializar_dir_usuario
+\emph default
+, se escribe en pantalla y luego se vuelve al CR3 original.
+ Este proceso verifica que el procesador puede acceder a ambas tablas.
+\end_layout
+
+\begin_layout Standard
+Para mapear/unmapear una dirección virtual cualquiera, en una física utilizando
+ un PD dado, se crearon las funciones: 
+\emph on
+mapear_pagina y unmapear_pagina.
+
+\emph default
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+mapear_pagina
+\emph default
+ agrega los registros correspondientes en la PD y PT para mapear una dirección
+ virtual a una física.
+ Realiza el siguiente procedimiento:
+\end_layout
+
+\begin_layout Itemize
+Obtiene el offset correspondiente a la entrada de directorio de la direccion
+ virtual.
+ Son los 10bits más significativos.
+\end_layout
+
+\begin_layout Itemize
+Obtiene el offset para la entrada de tabla.
+ Desde el bit 21 hasta el 12 inclusive.
+\end_layout
+
+\begin_layout Itemize
+Con los dos offset de arriba sabemos en qué posición debemos colocar cada
+ entrada.
+\end_layout
+
+\begin_layout Itemize
+Obtenemos de la PD, la entrada correspondiente, y nos fijamos si ya tiene
+ ingresada una tabla.
+ Sino pedimos memoria para esa tabla y hacemos que esta entrada apunte a
+ esa tabla.
+\end_layout
+
+\begin_layout Itemize
+En la tabla, vamos hasta el offset correspondiente a la tabla de la direccion
+ virtual y allí guardamos el puntero a la memoria que recibimos por parametro.
+ También poniendo los flags correspondientes.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+unmapear_pagina
+\emph default
+ es similar pero solo recibe por parámetro la dirección virtual.
+ Básicamente llega a la entrada de la tabla de páginas igual que 
+\emph on
+mapear_pagina
+\emph default
+, solo que en vez de apuntarla a una dirección física pone la entrada toda
+ con ceros.
+ Luego de hacer esto, esa dirección virtual de memoria deja de ser accesible.
+\end_layout
+
+\begin_layout Section*
+Ejercicio 5
+\end_layout
+
+\begin_layout Standard
+Para que las interrupciones por hardware lleguen con un valor que no se
+ pise con las excepciones ya definidas por el procesador fue necesario reconfigu
+rar el PIC.
+ Para esto se usaron las funciones provistas por la cátedra.
+\end_layout
+
+\begin_layout Standard
+Se agregaron también handlers para las interrupciones 32 (clock), 33 (teclado),
+ 66, 88 y 89 en la función 
+\emph on
+inicializar_idt
+\emph default
+.
+ En todos los handlers de interrupciones por hardware se tiene en cuenta
+ que hay que resguardar los registros de propósito general y notificar al
+ PIC que se atendió la interrupción.
+\end_layout
+
+\begin_layout Standard
+En el handler de la interrupción de reloj simplemente se llama a la funcion
+ pedida para que dibuje el clock.
+ 
+\end_layout
+
+\begin_layout Standard
+En el handler de la interrupcion de teclado se usó los scancodes de las
+ teclas para reconocer si se presionó un número e ignorar la teclas sino.
+ Para imprimir por pantalla se utilizó, nuevamente, el macro IMPRIMIR_TEXTO.
+ Vale la pena aclarar que solo se usaron los números del teclado qwerty
+ que se encuentran sobre las letras y no los del teclado numérico.
+\end_layout
+
+\begin_layout Section*
+Ejercicio 6
+\end_layout
+
+\begin_layout Standard
+Se utilizó una variable global, 
+\emph on
+next_entry
+\emph default
+, que apunta a la próxima entrada libre en la GDT.
+ Se creó la función 
+\emph on
+inicializar_gdt
+\emph default
+ donde se asigna esta variable a la próxima entrada libre en la gdt (teniendo
+ en cuenta las entradas ya ocupadas con los segmentos de código, datos y
+ video) y la función 
+\emph on
+entrada_libre_gdt
+\emph default
+ que devuelve el valor actual de la variable 
+\emph on
+next_entry
+\emph default
+ y la incrementa para que apunte a la próxima posición.
+ Un procedimiento muy similar al realizado con la unidad de MMU.
+\end_layout
+
+\begin_layout Standard
+También se creo la función 
+\emph on
+cargar_tarea_gdt
+\emph default
+ que recibe un puntero a una estructura tss y crea un selector en la gdt
+ usando los siguientes atributos:
+\end_layout
+
+\begin_layout Itemize
+límite = 0x67
+\end_layout
+
+\begin_layout Itemize
+tipo = 0x9
+\end_layout
+
+\begin_layout Itemize
+presente = 0x01
+\end_layout
+
+\begin_layout Standard
+Y el resto de los atributos (salvando el base_address) en cero.
+\end_layout
+
+\begin_layout Standard
+La función obtener_tss_inicial usa la estructura tarea_inicial que la inicializa
+ toda en cero y pone los eflags en 0x202 (es decir, con las interrupciones
+ habilitadas).
+\end_layout
+
+\begin_layout Standard
+Para completar la tarea IDLE se usó obtener_tss_idle.
+ Realiza lo mismo que obtener_tss_inicial pero con la estructura tarea_idle.
+ También pide una página de usuario que será utulizada para la pila de la
+ tarea.
+ Debido a que la pila 
+\begin_inset Quotes eld
+\end_inset
+
+crece hacia arriba
+\begin_inset Quotes erd
+\end_inset
+
+, se la apunta a la última dirección accesible de la página alineada a 4
+ bytes.
+\end_layout
+
+\begin_layout Standard
+Para ejecutar la tarea IDLE primero cargamos el task register con la tarea
+ inicial (porque antes de cambiar a la tarea idle, guardara el contexto
+ actual en el tss apuntada por el registro tr) y luego hacemos un jmp para
+ cambiar a la tarea IDLE.
+\end_layout
+
+\begin_layout Section*
+Ejercicio 7
+\end_layout
+
+\begin_layout Standard
+En la funcion crear proceso se piden dos páginas libres de usuario: una
+ para el kernel y otra para la pila.
+ Como la pila crece hacia arriba y usamos 32 bits, se apunta al final de
+ la página.
+ Se copia el codigo en la pagina que se pidio para el codigo (como esa direccion
+ virtual no es accesible desde el cr3 en uso, se la mapea temporalmente).
+ Tambien al page directory se crea con identity mapping salvo para las direccion
+es que el enunciado pide otro mapeo, que se respeta.
+ Tambien se crea una entrada nueva para un tss en memoria, se lo completa
+ con valores coherentes (eflags con interrupciones habilitadas, la pila,
+ el EIP y segmentos) y se la almacena en la gdt.
+ También se guarda en un arreglo el selector de la gdt para facilitar la
+ implementación de 
+\begin_inset Quotes eld
+\end_inset
+
+proximo_indice
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Proximo indice devuelve el valor del selector de tss (0x8, 0x10, etc) de
+ la proxima tarea a ejecutar.
+ Cuando llega a la ultima tarea, vuelve a la primera.
+ Esta misma variable se usa para saber cual es la tarea actual que se esta
+ ejecutando
+\end_layout
+
+\begin_layout Standard
+c) Usa el valor de la variable global 
+\begin_inset Quotes eld
+\end_inset
+
+tarea actual
+\begin_inset Quotes erd
+\end_inset
+
+ que usar proximo_indice para devolver la siguiente tarea.
+\end_layout
+
+\begin_layout Standard
+d) se uso una variable selector y offset que se escriben desde la interrupcion
+ de reloj con el valor devuelto por proximo_indice.
+ despues se hace un jmp far a este selector cambiando así detarea.
+\end_layout
+
+\begin_layout Standard
+e y f) se creo la variable 
+\begin_inset Quotes eld
+\end_inset
+
+dormida
+\begin_inset Quotes erd
+\end_inset
+
+, y funciones que setean 1 o 0 esta variable.
+ entonces en la interrupcion de teclado, verificamos la tecla T, y cuando
+ es presionada se llama a una de esta funcion que 
+\begin_inset Quotes eld
+\end_inset
+
+despierta
+\begin_inset Quotes erd
+\end_inset
+
+ a la tarea control.
+ Cuando la variable dormida esta en 0 la tarea control se ejecuta normalmente,
+ sino se saltea.
+ Cuando ocurre int66 duerme tarea control (cambiando dormida=1) y cambia
+ de tarea.
+\end_layout
+
+\end_body
+\end_document
