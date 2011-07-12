@@ -1,15 +1,5 @@
-##################################
-
-Ejercicio 1: pasar a modo protegido
-Hecho
-
 Pregunta 1:
 Da error de General Protection. Tira este error porque estámos tratando de acceder con un segmento fuera de su limite.
-
-XXX: cambie el limite del segmento de video, esta bien asi, no ?
-
-
-##################################
 
 Ejercicio 2: preparar interrupciones
 Falta imprimir backtrace, pregunta 3 y 4
@@ -27,14 +17,15 @@ Sí, siempre que haya alguna forma de encontrar los codigos de retornos
 anteriores. En la convención C esto ocurre y por eso se puede hacer. Pero no es
 la unica convencion que se puede definir con la que se puede lograr un backtrace.
 
-##################################
-
-Ejercicio 3: habilitar paginacion
-Hecho
-
 Pregunta 5:
-Si
-<falta pseudocodigo>
+Si, teniendo en cuenta activar el bit de Page Size en la entrada de directorio
+para las paginas de 4mb y activar el bit PSE en el cr4 para accederlas. De esta
+forma, para dos dircciones virtuales distintas (dir_virtual y dir_virtual2) se
+puede mapear a una misma direccion fisica con un psuedocodigo asi:
+
+map_page_4mb(dir_virtual, cr3, fisica)
+
+map_page_4k(dir_virtual2, cr3, fisica)
 
 Pregunta 6:
 
@@ -46,39 +37,22 @@ fisica.
 
 Pregunta 7:
 
-Hay espacio en memoria usado para ld GDT y, si esta habilitada paginacion, para
+Hay espacio en memoria usado para la GDT y, si esta habilitada paginacion, para
 el Page Directory y el Page Table. Tambien el kernel esta puesto en memoria.
 Luego, si escribe en lo 4gb estaria pisando estas estructuras, el kernel y a la
 tarea misma. Es decir que una vez que piso su Page Directory (por decir un
 ejemplo) se generara (probablemente) una excepcion la proxima vez que intente
 escribir/leer de memoria.
 
-##################################
-
-Ejercicio 4: manejo de paginas
-Hecho
-
 Pregunta 8:
-Cada entrada de la tabla de directorios y de paginas lleva permisos de
-supervisor, porque de esta forma se evita que cualquiera con CPL=3 modifique a
-donde apunta. Es decir, al ponerlo en las entradas de directorios y en las
-entradas de paginas, nadie puede modificar a que tabla apunta una entrada de
-directorio o a que direccion fisica apunta una entrada de tabla
+Cada entrada valida de la tabla de directorios y de paginas lleva permisos de
+supervisor. De esta forma no se deja acceder desde nivel de usuario a ninguna de estas páginas.
 
 Pregunta 9:
-Si. Si en el directorio de tabla de paginas ponemos dos entradas que apunten a la misma tabla de pagina.
+Sí. Si en el directorio de tabla de paginas ponemos dos entradas que apunten a la misma tabla de pagina.
 
 Pregunta 10: ¿Que es el TLB (Translation Lookaside Buffer) y para que sirve?
 Es una memoria caché que tiene partes de la tabla de páginación. El objetivo es evitar ir a memoria al traducir direcciones lógicas a físicas.
-
-##################################
-
-Ejercicio 5: handler de interrupciones
-Hecho
-
-##################################
-
-Ejercicio 6: Tareas
 
 Pregunta 11:
 corriendo desde la consola de bochs 'info tss' muestra la informacion de la
@@ -96,8 +70,3 @@ Si no se pone un handler para esas interrupciones, cuando surja esa interrupcion
 Esto pasa porque no hay una entrada valida en la IDT. 
 Segun el manual de intel (3A 6-51), ocurrio "Accessing a gate that contains a null segment selector"
 o "The segment selector in a call, interrupt, or trap gate does not point to a code segment".
-
-##################################
-
-Ejercicio 7: un poco de todo
-nada

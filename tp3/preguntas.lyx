@@ -1,0 +1,292 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Preguntas
+\end_layout
+
+\begin_layout Subsection*
+¿Qué ocurre si se intenta escribir en la fila 26, columna 1 de la matriz
+ de e video utilizando el usando el segmento de la GDT que direcciona a
+ la memoria de video? ¿Por qué?
+\end_layout
+
+\begin_layout Standard
+Ocurre error de General Protection.
+ Tira este error porque estámos tratando de acceder con un segmento fuera
+ de su limite.
+\end_layout
+
+\begin_layout Subsection*
+¿Cómo se puede hacer para generar una excepción sin utilizar la instrucción
+ int? Mencione al menos 3 formas posibles.
+\end_layout
+
+\begin_layout Enumerate
+Haciendo una division por 0 (int 0)
+\end_layout
+
+\begin_layout Enumerate
+Escribiendo con el segmento de video en un offset superior al limite (int
+ 13)
+\end_layout
+
+\begin_layout Enumerate
+Escribiendo en el codigo un Opcode invalido (ej: db 'r') (int 6)
+\end_layout
+
+\begin_layout Subsection*
+¿Cuáles son los valores del stack? ¿Qué significan?
+\end_layout
+
+\begin_layout Standard
+lo que se ha puesto en la pila, los EFLAGS, CS, EIP y, si corresponde (dependeie
+ndo la excepción), un error code.
+\end_layout
+
+\begin_layout Subsection*
+¿Puede ser construido el backtrace si no se respeta la convención C? ¿Por
+ qué? 
+\end_layout
+
+\begin_layout Standard
+Sí, siempre que haya alguna forma de encontrar los codigos de retornos anteriore
+s.
+ En la convención C esto ocurre y por eso se puede hacer.
+ Pero no es la unica convencion que se puede definir con la que se puede
+ crear un backtrace.
+\end_layout
+
+\begin_layout Subsection*
+¿Es posible mapear una página de 4Kb que se encuentra dentro de otra página
+ de 4Mb que se ya encuentra mapeada? Realice el pseudocodigo de ser necesario
+ 
+\end_layout
+
+\begin_layout Standard
+Si, teniendo en cuenta activar el bit de Page Size en la entrada de directorio
+ para las paginas de 4mb y activar el bit PSE en el cr4 para accederlas.
+ De esta forma, para dos dircciones virtuales distintas (dir_virtual y dir_virtu
+al2) se puede mapear a una misma direccion fisica:
+\end_layout
+
+\begin_layout Standard
+map_page_4mb(dir_virtual, cr3, fisica)
+\end_layout
+
+\begin_layout Standard
+map_page_4k(dir_virtual2, cr3, fisica)
+\end_layout
+
+\begin_layout Subsection*
+Suponiendo que una tarea pueda modificar el directorio de páginas ¿Puede
+ esta tarea acceder a cualquier posición de la memoria?
+\end_layout
+
+\begin_layout Standard
+Sí.
+ Puede apuntar una entrada de directorio al mismo page directory y si la
+ entrada en la tabla de páginas de la dirección virtual tiene otro índice
+ que la entrada en la tabla de directorios, como puede escribir en el directorio
+ de páginas, puede apuntarla a cualquier posición física de la memoria logrando
+ así acceder.
+ Es importante notar que la limitación está sobre la dirección virtual a
+ usar y no sobre la dirección física, ya que puede acceder a cualquiera.
+ Sin embargo, si esta restricción sobre la dirección virtual molesta y puede
+ pedir memoria, esta memoria la puede utilizar para la tabla de páginas
+ de esas entradas.
+ Y si no puede pedir memoria probablemente puede usar la pila como tabla
+ de páginas.
+ Igualmente, como ya se dijo, todos estos 
+\begin_inset Quotes eld
+\end_inset
+
+trucos
+\begin_inset Quotes erd
+\end_inset
+
+ son necesarios para usar todas las direcciones virtuales y no para usar
+ acceder a cualquier dirección física.
+\end_layout
+
+\begin_layout Subsection*
+¿Puede una tarea escribir todas las direcciones de memoria de los 4Gb que
+ le es posible direccionar? ¿Qué dificultades genera?
+\end_layout
+
+\begin_layout Standard
+Hay espacio en memoria usado para la GDT y, si esta habilitada paginacion,
+ para el Page Directory y el Page Table.
+ Tambien el kernel esta puesto en memoria.
+ Luego, si escribe en lo 4gb estaria pisando estas estructuras, el kernel
+ y a la tarea misma.
+ Es decir que una vez que piso su Page Directory (por decir un ejemplo)
+ se generara (dependiendo qué parte de este se haya pisado) una excepcion
+ la proxima vez que intente escribir/leer de memoria.
+\end_layout
+
+\begin_layout Subsection*
+¿Por qué el rango de direcciones 0x00000000 a 0x00100000 llevan permisos
+ de supervisor? ¿Este permiso de supervisor, va en la entrada de directorio
+ o la entrada de la tabla de páginas? ¿Qué valor debe ir en la entrada de
+ la tabla de directorio? ¿Por qué?
+\end_layout
+
+\begin_layout Standard
+Cada entrada valida de la tabla de directorios y de paginas lleva permisos
+ de supervisor.
+ De esta forma no se deja acceder desde nivel de usuario a ninguna de estas
+ páginas.
+\end_layout
+
+\begin_layout Subsection*
+¿Es posible desde dos directorios de página referenciar a una misma a tabla
+ de páginas?
+\end_layout
+
+\begin_layout Standard
+Sí.
+ Simplemente en el directorio de tabla de paginas ponemos dos entradas que
+ apunten a la misma tabla de pagina.
+\end_layout
+
+\begin_layout Section*
+¿Que es el TLB (Translation Lookaside Buffer) y para que sirve?
+\end_layout
+
+\begin_layout Standard
+Es una memoria caché que tiene partes de la tabla de paginación.
+ El objetivo es evitar ir a memoria al traducir direcciones lógicas a físicas.
+\end_layout
+
+\begin_layout Subsection*
+Colocando un breakpoint luego de cargar una tarea, ¿cómo se puede o verificar,
+ utilizando el debugger de bochs, que la tarea se cargó correctamente? ¿Cómo
+ llega a esta conclusión?
+\end_layout
+
+\begin_layout Standard
+Corriendo desde la consola de bochs 
+\begin_inset Quotes eld
+\end_inset
+
+info tss
+\begin_inset Quotes erd
+\end_inset
+
+ muestra la informacion de la tarea actual.
+ Tambien, corriendo 
+\begin_inset Quotes eld
+\end_inset
+
+info gdt
+\begin_inset Quotes erd
+\end_inset
+
+ deberia marcar la entrada de la GDT correspondiente a la tarea como Busy.
+\end_layout
+
+\begin_layout Subsection*
+¿Cómo puede hacer para verificar si la conmutación de tarea fue exitosa?
+ 
+\end_layout
+
+\begin_layout Standard
+Poniendo un breakpoint antes de hacer el jmp que cambia el contexto.
+ Ignoro el primer breakpoint (cambio de contexto del kernel a la primer
+ tarea) y luego en el proximo breakpoint se puede correr 
+\begin_inset Quotes eld
+\end_inset
+
+creg
+\begin_inset Quotes erd
+\end_inset
+
+ e 
+\begin_inset Quotes eld
+\end_inset
+
+info tss
+\begin_inset Quotes erd
+\end_inset
+
+ y ver que efectivamente cambia respecto de la proxima vez que se detiene
+ por este breakpoint.
+\end_layout
+
+\begin_layout Subsection*
+Se sabe que las tareas llaman a la interrupciones 88 y 89 y por eso debe
+ realizarse el ejercicio anterior antes de conmutar de tarea.
+ ¿Qué ocurre si no se hace? ¿Por qué?
+\end_layout
+
+\begin_layout Standard
+Si no se pone un handler para esas interrupciones, cuando surja esa interrupcion
+, se genera un #GP.
+ Esto pasa porque no hay una entrada valida en la IDT.
+ Segun el manual de intel (3A 6-51), ocurrio "Accessing a gate that contains
+ a null segment selector" o "The segment selector in a call, interrupt,
+ or trap gate does not point to a code segment".
+ 
+\end_layout
+
+\end_body
+\end_document
